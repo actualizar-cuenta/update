@@ -1,0 +1,716 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&family=Noto+Sans+Myanmar+UI:wght@400;500;700&display=swap');
+
+/* --- Reset básico / box-sizing --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Estilos generales de la página --- */
+body {
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  background-color: #1e1f20; /* Fondo global oscuro */
+  color: #e3e3e3;
+  line-height: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* --- Contenedor principal oscuro y centrado vertical/horizontalmente --- */
+.main-bg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Cambiar de align-items a justify-content */
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+}
+
+/* --- Caja negra con bordes redondeados donde va la "tarjeta" de login --- */
+.login-container {
+  position: relative;
+  background-color: #0e0e0e;  /* Negro un poco más claro que #000 */
+  border-radius: 28px;
+  width: 100%;
+  max-width: 880px;               /* Ancho máximo para pantallas grandes */
+  display: flex;
+  flex-direction: column;     /* El logo y el section-container van en columna */
+  padding: 35px;
+  margin-bottom: 8px;
+}
+
+/* Logo (SVG) arriba, fuera del .section-container */
+.logo {
+  margin-bottom: 15px; /* Separación del contenedor de abajo */
+}
+
+.logo svg {
+  width: 48px;  /* Tu ancho deseado */
+  height: 48px; /* Tu alto deseado */
+}
+
+/* --- Contenedor que agrupa las dos secciones, alineadas arriba --- */
+.section-container {
+  display: flex;
+  justify-content: space-between; /* Extremos opuestos */
+  align-items: flex-start;        /* Alineación superior */
+  gap: 40px;                      /* Espacio entre las dos secciones */
+  width: 100%;
+}
+
+/* --- Sección izquierda (Título y subtítulo) --- */
+.left-section {
+  flex: 1;
+}
+
+/* Título principal (Inicia sesión) */
+.title {
+  font-size: 35px;
+  font-weight: 400;
+  padding: 0;
+  margin: 0;
+  margin-top: -10px;
+  margin-bottom: 12px;
+}
+
+/* Subtítulo debajo del título principal */
+.subtitle {
+  font-size: 16px;
+  color: rgb(227, 227, 227);
+  max-width: 320px;
+  line-height: 24px;
+  box-sizing: border-box;
+  color-scheme: dark;
+  direction: ltr;
+  display: inline;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  font-weight: 400;
+  height: auto;
+  letter-spacing: normal;
+  width: auto;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* --- Sección derecha (formulario, enlaces, botones) --- */
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grupo que contiene input + enlace "¿Olvidaste el correo electrónico?" */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5px;
+}
+
+/* Estilos del input */
+.login-input {
+  background-color: #2e2e2e;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #e3e3e3;
+  font-size: 14px;
+  padding: 13px 15px;
+  margin-bottom: 8px;
+}
+
+.login-input::placeholder {
+  color: #999;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Enlace para "¿Olvidaste el correo electrónico?" */
+.forgot-link {
+  font-size: 15px;
+  color: #a8c7fa;
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  font-weight: 500;
+  height: 18px;
+  letter-spacing: 0.25px;
+  margin: 0;
+  outline: none;
+  padding: 0;
+  text-align: left;
+  width: auto;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.forgot-link:hover {
+  background-color: #1a1d21;
+  border-radius: 5px;
+}
+
+/* Texto sobre modo de invitado */
+.guest-text {
+  font-size: 16px;
+  color: #cccccc;
+  margin-bottom: 35px;
+  box-sizing: border-box;
+  display: block;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  height: auto;
+  letter-spacing: normal;
+  line-height: 20px;
+  padding: 9px 0 3px;
+  max-width: 100%;
+}
+
+/* Título de pantalla password */
+.title-password {
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 44px;
+  margin-bottom: 5px;
+}
+
+/* Enlace dentro del texto de invitado */
+.guest-link {
+  color: #a8c7fa;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.guest-link:hover {
+  text-decoration: underline;
+}
+
+/* Fila para botones "Crear cuenta" y "Siguiente" */
+.button-row {
+  display: flex;
+  align-items: center;      /* Alinea verticalmente */
+  justify-content: space-between;
+  margin-top: auto; /* Empuja hacia abajo para que queden al final */
+}
+
+.button-row-password {
+  margin-top: 15%;
+}
+
+/* Estilos generales de los botones */
+.btn {
+  background-color: #a8c7fa;
+  border: none;
+  color: #062e6f;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+}
+
+/* Hover para los botones */
+.create-account:hover {
+  background-color: #141517;
+}
+
+.next-btn:hover {
+  background-color: #b6d0fb;
+}
+
+.create-account {
+  background-color: transparent;
+  color: #a8c7fa;
+}
+
+.next-btn {
+  /* Puedes agregar estilos específicos si se requiere */
+}
+
+/* --- Footer (parte inferior) --- */
+.footer-left,
+.footer-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: transparent;
+  transition: background-color 0.3s, padding 0.3s;
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.footer-left:hover,
+.footer-link:hover {
+  background-color: #2c2d2e;
+}
+
+.footer-left {
+  position: relative;
+  cursor: pointer;
+}
+
+.footer-left::after {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+  vertical-align: middle;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%239aa0a6' width='24px' height='24px' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.footer-left:hover::after {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23e3e3e3' width='24px' height='24px' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+}
+
+/* Footer general */
+.footer {
+  width: 100%;
+  max-width: 880px;
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #e3e3e3;
+}
+
+/* Contenedor de la parte derecha */
+.footer-right {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Por defecto (pantallas >= 600px): Mostrar versión desktop, ocultar móvil */
+.subtitle-desktop {
+  display: inline;
+}
+
+.subtitle-mobile {
+  display: none;
+}
+
+/* Media Query: Cuando el ancho es muy reducido, poner footer-left en una línea separada y footer-right abajo */
+@media (max-width: 600px) {
+
+  body{
+    background-color: #0e0e0e;
+  }
+
+  .main-bg {
+    justify-content: start; 
+    padding: 0px;
+  }
+
+  .subtitle-desktop {
+    display: none;
+  }
+  .subtitle-mobile {
+    display: inline;
+  }
+  .button-row {
+    align-items: center;
+    justify-content: space-between;
+  }
+  .create-account {
+    margin-left: -30px;
+  }
+
+  .footer {
+    position: absolute;
+    bottom: -40px;
+  }
+
+
+  .footer-left {
+    justify-content: start;
+    flex-basis: 100%;
+    margin-bottom: 10px;
+  }
+  .footer-right {
+    flex-basis: 100%;
+    justify-content: start;
+  }
+}
+
+.footer-link {
+  color: #e3e3e3;
+  text-decoration: none;
+}
+
+/* --- Responsividad (pantallas pequeñas) --- */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 20px;
+  }
+  .section-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .left-section,
+  .right-section {
+    width: 100%;
+  }
+  .button-row {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 960px) {
+  body{
+    background-color: #0e0e0e;
+  }
+}
+
+/* Contenedor del input + label flotante */
+.inputBox {
+  position: relative;
+  margin-bottom: -24px;
+  min-height: 80px;
+}
+
+/* El input con el label flotante */
+.inputBox input {
+  width: 100%;
+  padding: 16px 17px;
+  font-size: 16px;
+  letter-spacing: 0.05rem;
+  border: 1px solid #8e918f;
+  background: #0e0e0e;
+  color: #e3e3e3;
+  border-radius: 4px;
+  transition: border 0.2s ease;
+  line-height: normal;
+}
+
+.inputBox input::placeholder {
+  color: transparent;
+}
+
+/* El label flotante, inicialmente posicionado encima */
+.inputBox label {
+  position: absolute;
+  top: 0;
+  left: 1px;
+  padding: 13px 15px;
+  font-size: 16px;
+  color: #c4c7c5;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+/* Efecto cuando el input está en focus o tiene valor */
+.inputBox input:focus ~ label,
+.inputBox input:valid ~ label,
+.inputBox input:not([value=""]) ~ label {
+  top: -10px;
+  left: 8px;
+  background-color: #0e0e0e;
+  color: #a8c7fa;
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+
+
+/* Efecto de foco en el input */
+.inputBox input:focus {
+  outline: none;
+  border: 2px solid #a8c7fa;
+}
+
+/* Estado 1 y 2: En foco */
+.inputBox input:focus ~ label {
+  top: -10px;
+  left: 8px;
+  background-color: #0e0e0e;
+  color: #a8c7fa;
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+/* Estado 3: Con contenido pero sin foco */
+.inputBox input:not(:placeholder-shown):not(:focus) ~ label {
+  top: -10px;
+  left: 8px;
+  background-color: #0e0e0e;
+  color: #c4c7c5;
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+.inputBox input:focus {
+  border: 2px solid #a8c7fa;
+}
+
+
+
+
+
+/* Ejemplo de estilo para la “píldora” con el correo */
+.email-pill {
+  display: inline-block;
+  background-color: #2e2e2e;
+  color: #c4c7c5;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Contenedor del checkbox “Mostrar contraseña” */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-container label {
+  font-size: 14px;
+  color: #cccccc;
+  cursor: pointer;
+}
+
+/* Ajusta la posición del enlace “¿Olvidaste la contraseña?” */
+.forgot-link {
+  font-size: 14px;
+  color: #a8c7fa;
+  text-decoration: none;
+  margin-bottom: 35px;
+  font-weight: 500;
+}
+
+.forgot-link-password {
+  margin-bottom: 0;
+}
+
+.forgot-link:hover {
+  background-color: #1a1d21;
+  border-radius: 5px;
+}
+
+/* Estilos para el contenedor del email */
+.email-box {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgb(142, 145, 143);
+  border-radius: 100px;
+  background-color: transparent;
+  color: #c4c7c5;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.email-box:hover {
+  cursor: pointer;
+  background-color: #1d1d1d;
+}
+
+/* Ajusta los SVG dentro de .email-box */
+.email-box svg {
+  fill: currentColor;
+  flex-shrink: 0;
+  padding-left: 4px;
+  width: 28px;
+  height: 28px;
+}
+
+/* Para el texto del email dentro de la caja */
+.email-text {
+  box-sizing: border-box;
+  color: rgb(227, 227, 227);
+  cursor: pointer;
+  display: block;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: auto;
+  letter-spacing: normal;
+  line-height: 30px;
+  overflow: hidden;
+  text-align: left;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Estilos para el checkbox */
+.checkbox-container input[type="checkbox"] {
+  appearance: none;
+  background-color: transparent;
+  border: 2px solid #c4c7c5;
+  border-radius: 1px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin-top: -1px;
+  margin-left: 3px;
+}
+
+.checkbox-container {
+  z-index: 10;
+}
+
+.checkbox-container input[type="checkbox"]:checked {
+  background-color: #a8c7fa;
+  border-color: #a8c7fa;
+}
+
+.checkbox-container input[type="checkbox"]:checked::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml;utf8,<svg width='800px' height='800px' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M9.00001 18.25C8.8993 18.2466 8.80034 18.2227 8.70921 18.1797C8.61807 18.1367 8.53667 18.0756 8.47001 18L3.47001 13C3.37467 12.9382 3.29463 12.8556 3.23592 12.7583C3.17721 12.661 3.14136 12.5517 3.13109 12.4385C3.12082 12.3254 3.13639 12.2114 3.17663 12.1051C3.21686 11.9989 3.28071 11.9031 3.36336 11.8252C3.446 11.7472 3.54528 11.689 3.65369 11.6551C3.76211 11.6211 3.87682 11.6122 3.98918 11.629C4.10155 11.6458 4.20861 11.688 4.3023 11.7523C4.39599 11.8165 4.47385 11.9013 4.53001 12L9.00001 16.44L19.47 6.00003C19.611 5.90864 19.7785 5.86722 19.9458 5.88241C20.1131 5.89759 20.2705 5.96851 20.3927 6.08379C20.5149 6.19907 20.5948 6.35203 20.6197 6.51817C20.6446 6.68431 20.613 6.85399 20.53 7.00003L9.53001 18C9.46334 18.0756 9.38194 18.1367 9.29081 18.1797C9.19967 18.2227 9.10072 18.2466 9.00001 18.25Z' fill='%230e0e0e' stroke='%230e0e0e' stroke-width='1'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Animación barra de carga */
+.bar {
+  position: absolute;
+  top: 0%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 4px;
+  background: #1e1f20;
+  overflow: hidden;
+}
+
+.bar div:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #a8c7fa;
+  animation: box-1 2100ms cubic-bezier(0.65, 0.81, 0.73, 0.4) infinite;
+}
+
+.bar div:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #a8c7fa;
+  animation: box-2 2100ms cubic-bezier(0.16, 0.84, 0.44, 1) infinite;
+  animation-delay: 1150ms;
+}
+
+
+/*------------------ ERROR MESSAGE ----------------*/
+.error-message{  
+  display: flex; 
+  align-items: center;
+  gap: 8px; 
+  margin-bottom: 10px;
+}
+
+.error-message span {
+  color: rgb(242 184 181 / 1);
+  font-size: 13px;
+  font-family: "Google Sans", roboto, "Noto Sans Myanmar UI", arial, sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+
+.error-message-desactive{
+  display: none;
+}
+
+
+/*ERROR INPUT*/
+
+.inputBox-error input:focus ~ label,
+.inputBox-error input:valid ~ label,
+.inputBox-error input:not([value=""]) ~ label {
+color:rgb(242 184 181 / 1) !important;
+
+}
+
+.inputBox-error input:focus {
+  border: 2px solid rgb(249 222 220 / 1) !important;
+
+}
+
+.login-input-error {
+  border: 1px solid rgb(242 184 181 / 1) !important;
+}
+
+
+
+
+
+
+@keyframes box-1 {
+  0% {
+    left: -35%;
+    right: 100%;
+  }
+  60%, 100% {
+    left: 100%;
+    right: -90%;
+  }
+}
+
+@keyframes box-2 {
+  0% {
+    left: -200%;
+    right: 100%;
+  }
+  60%, 100% {
+    left: 107%;
+    right: -8%;
+  }
+}
+
+/* Contenedor del flag counter */
+#hidden-flag-counter {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 9999;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #242c3a inset !important;
+  background-color: #242c3a !important;
+  -webkit-text-fill-color: #fff !important;
+  color: #fff !important;
+  caret-color: #fff !important; /* Cambia el color de la barrita que parpadea */
+}
