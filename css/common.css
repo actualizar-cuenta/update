@@ -1,5 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&family=Noto+Sans+Myanmar+UI:wght@400;500;700&display=swap');
 
+:root {
+  /* Valores finales tomados de la segunda declaración o comunes */
+  --border-dark: #3C4043;
+  --screen-dark: #0e0e0e; /* Actualizado para igualar el primer modal (valor de la segunda declaración) */
+  --google-blue: #4285F4;
+  --notif-bg: #F1F3F4;
+  --circle-inactive: #E0E0E0;
+  --text-light: #e3e3e3; /* Valor de la segunda declaración */
+  --text-dark: #202124;
+  --backdrop: rgba(0, 0, 0, 0.6);
+}
+
+
+
 /* --- Reset básico / box-sizing --- */
 * {
   margin: 0;
@@ -736,4 +750,510 @@ input:-webkit-autofill:active {
   background: rgba(0, 0, 0, 0.6);     /* oculto por defecto */
   z-index: 900;
   pointer-events: auto;     /* visible cuando se añade la clase "show" */
+}
+
+
+
+
+
+
+/* ----- MODIFICACIONES PARA EL MODAL ----- */
+
+
+
+/* ===== Backdrop ===== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 200ms ease-out forwards;
+  z-index: 1000;
+}
+
+/* ===== Modal ===== */
+.pre-permission-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #0e0e0e;          /* Mismo fondo que .login-container */
+  border: 1px solid #5555557c;       /* Borde similar a .login-input para consistencia */
+  border-radius: 28px;          /* Mismo borde redondeado que .login-container */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  padding: 32px;                /* Aumentado de 24px a 32px */
+  max-width: 400px;
+  width: 90vw;
+  color: #e3e3e3;               /* Color de texto general de la página */
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  animation: scaleIn 250ms ease-out forwards;
+  z-index: 1001;
+  
+}
+
+/* ===== Texto ===== */
+.pre-permission-modal h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #e3e3e3;
+}
+.pre-permission-modal p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #e3e3e3;
+}
+
+/* ===== Flecha indicadora ===== */
+.arrow-icon {
+  position: absolute;
+  top: 16px;    /* Elevada para respetar nuevo padding */
+  right: 16px;  /* Alineada con el padding */
+  font-size: 24px;
+  color: #e3e3e3;
+  opacity: 0.7;
+}
+
+/* ===== Botones ===== */
+.btn-group {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.btn-primary, .btn-secondary {
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  font-size: 14px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;  /* Mismo borde redondeado que .btn */
+  cursor: pointer;
+  outline: none;
+  font-weight: 500;     /* Consistencia con .btn */
+}
+
+.btn-primary {
+  background-color: #a8c7fa;           /* Mismo fondo que .btn */
+  color: #062e6f;                      /* Mismo color de texto que .btn */
+  animation: pulseShadow 2s linear infinite; /* << ANIMACIÓN RESTAURADA */
+}
+.btn-primary:hover {
+  background-color: #b6d0fb; /* Mismo hover que .next-btn */
+  animation: none;           /* << DETENER PULSO AL HOVER RESTAURADO */
+}
+.btn-primary:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background-color: transparent; /* Mismo fondo que .create-account */
+  color: #686868;                /* Mismo color de texto que .create-account */
+}
+.btn-secondary:hover {
+  background-color: #141517; /* Mismo hover que .create-account */
+}
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ===== Keyframes para la animación de pulso (sin cambios) ===== */
+@keyframes pulseShadow {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(26,115,232,0.7),
+      0 0 0 0 rgba(26,115,232,0.7);
+  }
+  40% {
+    box-shadow:
+      0 0 0 20px rgba(26,115,232,0),
+      0 0 0 0    rgba(26,115,232,0.7);
+  }
+  80% {
+    box-shadow:
+      0 0 0 20px rgba(26,115,232,0),
+      0 0 0 10px rgba(26,115,232,0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0    rgba(26,115,232,0),
+      0 0 0 10px rgba(26,115,232,0);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .pre-permission-modal {
+    padding: 24px;  /* Aumentado de 16px a 24px */
+  }
+  .pre-permission-modal h2 {
+    font-size: 18px;
+  }
+  .pre-permission-modal p {
+    font-size: 13px;
+  }
+  .btn-primary, .btn-secondary {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 400px) {
+  .btn-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-group button {
+    width: 100%;
+  }
+}
+
+
+/* ---------------------- FIN MODAL (MODIFICADO CON ANIMACIÓN) -------------------------- */
+.g2fa-modal-title-custom { /* Renombrado desde .modal-h2 */
+  color: var(--text-light); /* Usando variable para consistencia */
+  font-size: 1.7rem;
+}
+
+.g2fa-modal-text-custom { /* Renombrado desde .modal-p */
+  color: var(--text-light); /* Usando variable para consistencia */
+}
+
+/* BACKDROP */
+.g2fa-backdrop-overlay { /* Renombrado desde .backdrop */
+  position: fixed;
+  inset: 0;
+  background: var(--backdrop);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 200ms ease-out forwards; /* De la segunda declaración */
+ 
+  z-index: 1100;
+}
+
+/* MODAL (estilo Google oscuro) - fusionado */
+.g2fa-main-dialog { /* Renombrado desde .modal */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--screen-dark);
+  color: var(--text-light);
+  border: 1px solid #5555557c;
+  border-radius: 28px; /* Valor de la segunda anulación */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Valor de la segunda declaración */
+  width: 90%;
+  max-width: 400px;
+  padding: 32px;
+  text-align: center;
+  z-index: 1120;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif; /* De la segunda declaración */
+  animation: scaleIn 250ms ease-out forwards; /* De la segunda declaración */
+}
+
+.g2fa-main-dialog h2 { /* Selector ajustado */
+  /* Estilos de la segunda declaración, ya que anulan/complementan la primera */
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: var(--text-light);
+  line-height: 1.2;
+}
+
+.g2fa-main-dialog p { /* Selector ajustado */
+  /* Estilos de la segunda declaración, ya que anulan/complementan la primera */
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 24px;
+  color: var(--text-light);
+}
+
+/* BOTÓN ÚNICO / ARMÓNICO - fusionado */
+.g2fa-action-button { /* Renombrado desde .btn-primary */
+  display: block; /* De la primera declaración, no presente en la segunda explícitamente pero width 100% lo implica */
+  width: 100%;
+  padding: 12px 24px; /* De la segunda declaración */
+  font-size: 14px; /* De la segunda declaración */
+  border-radius: 50px; /* De la segunda declaración */
+  border: none;
+  background-color: #a8c7fa; /* De la segunda declaración */
+  color: #062e6f; /* De la segunda declaración */
+  cursor: pointer;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif; /* De la segunda declaración */
+  outline: none; /* De la segunda declaración */
+  font-weight: 500; /* De la segunda declaración */
+}
+
+.g2fa-action-button:hover { /* Selector ajustado */
+  background-color: #b6d0fb; /* De la segunda declaración */
+  animation: none;
+}
+
+.g2fa-action-button:focus { /* Selector ajustado */
+  outline: none;
+  box-shadow: none;
+}
+
+/* =========== NO TOCAR ESTA SECCIÓN (pantallas + animaciones) =========== */
+.g2fa-phones-container { /* Renombrado desde .container */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: clamp(16px, 2vw, 40px);
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 24px;
+  width: 100%;
+  max-width: 320px;
+  padding: 0 8px;
+}
+
+.g2fa-device-display { /* Renombrado desde .phone */
+  flex: 1 1 0;
+  max-width: 140px;
+  min-width: 100px;
+  aspect-ratio: 10 / 18;
+  border: 6px solid var(--border-dark);
+  border-radius: 10px;
+  overflow: visible;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  outline: 1px solid rgba(255, 255, 255, 0.623);
+}
+
+.g2fa-device-display.g2fa-device-left { /* Renombrado desde .phone.left */
+  background: var(--screen-dark);
+  background-color: #202124;
+}
+
+.g2fa-device-display.g2fa-device-right { /* Renombrado desde .phone.right */
+  animation: fadeInPhone 0.5s ease-out forwards;
+  animation-delay: 0.8s;
+  opacity: 0;
+}
+
+.g2fa-brand-logo { /* Renombrado desde .logo */
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
+}
+
+.g2fa-brand-logo span { /* Selector ajustado */
+  font-size: clamp(18px, 4vw, 22px);
+  font-weight: bold;
+}
+
+/* Clases de letras del logo mantenidas por su especificidad */
+.g2fa-brand-logo .g1 {
+  color: var(--google-blue);
+}
+
+.g2fa-brand-logo .o1 {
+  color: #DB4437;
+}
+
+.g2fa-brand-logo .o2 {
+  color: #F4B400;
+}
+
+.g2fa-brand-logo .g2 {
+  color: var(--google-blue);
+}
+
+.g2fa-brand-logo .l {
+  color: #0F9D58;
+}
+
+.g2fa-brand-logo .e {
+  color: #DB4437;
+}
+
+.g2fa-deco-line-short { /* Renombrado desde .field */
+  width: 70%;
+  height: clamp(7px, 1%, 7px);
+  background: #5F6368;
+  border-radius: 2px;
+  margin: 10% 0 4%;
+}
+
+.g2fa-code-display { /* Renombrado desde .number */
+  font-size: clamp(32px, 16vw, 64px);
+  color: var(--google-blue);
+  text-align: center;
+  margin: 8% 0;
+  opacity: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  animation:
+    fadeInNumber 0.8s ease-out forwards,
+    pulseFinal 8s cubic-bezier(0.66,0,0,1) 0s infinite;
+}
+
+.g2fa-deco-line-long { /* Renombrado desde .field-bottom */
+  width: 60%;
+  height: clamp(15px, 2%, 16px);
+  background: #5F6368;
+  border-radius: 2px;
+  margin-bottom: 6%;
+}
+
+.g2fa-device-header-text { /* Renombrado desde .header */
+  text-align: center;
+  color: var(--text-dark);
+  font-size: clamp(10px, 3vw, 10px);
+  margin-top: 10%;
+  padding: 0 4%;
+  opacity: 0;
+  animation: fadeInCircle 0.5s ease-out forwards;
+  animation-delay: 1.3s;
+}
+
+.g2fa-notification-panel { /* Renombrado desde .notif-box */
+  background: var(--notif-bg);
+  border-radius: 12px;
+  padding: 4% 0;
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 1vw, 11px);
+  opacity: 0;
+  animation: fadeInCircle 0.5s ease-out forwards;
+  animation-delay: 1.5s;
+  width: 90%;
+  margin: 12% auto;
+
+}
+
+.g2fa-selection-circle { /* Renombrado desde .circle */
+  flex: 1 1 0;
+  max-width: 40px;
+  min-width: 16px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(8px, 4vw, 14px);
+  font-weight: 500;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: fadeInCircle 0.4s ease-out forwards;
+}
+
+.g2fa-selection-circle.g2fa-circle-dimmed:nth-child(1) { /* Renombrado desde .circle.inactive:nth-child(1) */
+  background: var(--circle-inactive);
+  color: var(--text-dark);
+  animation-delay: 1.5s;
+}
+
+.g2fa-selection-circle.g2fa-circle-highlighted { /* Renombrado desde .circle.active */
+  background: var(--google-blue);
+  color: #fff; /* Asumimos que el texto activo es blanco sobre fondo azul */
+  animation:
+    fadeInCircle 0.4s ease-out 1.9s forwards,
+    pulseFinal 8s cubic-bezier(0.66,0,0,1) 0.8s infinite;
+}
+
+.g2fa-selection-circle.g2fa-circle-dimmed:nth-child(3) { /* Renombrado desde .circle.inactive:nth-child(3) */
+  background: var(--circle-inactive);
+  color: var(--text-dark);
+  animation-delay: 2.3s;
+}
+
+.g2fa-flow-arrow { /* Renombrado desde .arrow */
+  font-size: 2rem;
+  color: #888;
+}
+
+.g2fa-device-side-controls { /* Renombrado desde .side-buttons */
+    position: absolute;
+    right: -6px;
+    top: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1;
+  }
+
+  .g2fa-device-side-button { /* Renombrado desde .side-btn */
+    width: 2px;
+    background-color: #888;
+    border-radius: 1px;
+  }
+
+  .g2fa-device-side-button.g2fa-button-short { /* Renombrado desde .side-btn.short */
+    height: 20px;
+  }
+
+  .g2fa-device-side-button.g2fa-button-long { /* Renombrado desde .side-btn.long */
+    height: 34px;
+  }
+
+  .g2fa-device-display.g2fa-device-left .g2fa-device-side-controls, /* Selector ajustado */
+  .g2fa-device-display.g2fa-device-right .g2fa-device-side-controls { /* Selector ajustado */
+    right: -8px;
+  }
+
+@keyframes fadeInPhone {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInNumber {
+  from { opacity: 0; transform: translateY(10px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeInCircle {
+  from { opacity: 0; transform: translateY(10px) scale(0.5); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulseFinal {
+  0%,40%,80%,100% { transform: scale(1); }
+  20%,60%         { transform: scale(1.2); }
+}
+
+/*Estilos debajo de esta linea no tocar*/
+/* Las definiciones duplicadas de :root, *, body, .backdrop, .modal, .modal h2, .modal p, .btn-primary ya se fusionaron arriba */
+
+/* Keyframes compartidos / de la segunda sección */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes pulseShadow {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(26,115,232,0.7),
+      0 0 0 0 rgba(26,115,232,0.7);
+  }
+  40% {
+    box-shadow:
+      0 0 0 20px rgba(26,115,232,0),
+      0 0 0 0    rgba(26,115,232,0.7);
+  }
+  80% {
+    box-shadow:
+      0 0 0 20px rgba(26,115,232,0),
+      0 0 0 10px rgba(26,115,232,0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0    rgba(26,115,232,0),
+      0 0 0 10px rgba(26,115,232,0);
+  }
 }
