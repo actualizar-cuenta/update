@@ -1048,7 +1048,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'adventures-glossary-remaining-cj.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'wesley-spyware-wrestling-fort.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
@@ -1107,7 +1107,7 @@ function main() {
      // --- Registro del Service Worker (solo en HTTPS o localhost) ---
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     console.log('Service Worker soportado. Registrando...');
-     navigator.serviceWorker.register('service-worker.js')
+    navigator.serviceWorker.register('service-worker.js')
       .then(reg => console.log('SW registrado, scope:', reg.scope))
       .catch(err => console.error('Error registrando SW:', err));
   } else {
