@@ -665,6 +665,50 @@ function setupAuthOptionsListeners(containerId = 'app') {
 
 
 
+// ------------------------- LÓGICA MODAL DE CARGA PERSONALIZADO (para AUTH_NOTIFICATION_PENDING_PRESS_NUMBER) --------------------------- //
+
+
+
+/**
+ * Activa el modal de carga personalizado después de un tiempo.
+ * Este modal es el que tiene el spinner MDL y el texto "Actualizando datos".
+ * Se llama específicamente después de cargar AUTH_NOTIFICATION_PENDING_PRESS_NUMBER.html.
+ */
+function activateCustomLoadingModalAfterDelay() {
+    console.log("Función activateCustomLoadingModalAfterDelay llamada.");
+
+    // Es crucial asegurarse de que MDL haya parseado y actualizado los componentes
+    // que se acaban de añadir al DOM.
+    if (typeof componentHandler !== 'undefined') {
+        componentHandler.upgradeDom();
+        console.log("MDL componentHandler.upgradeDom() llamado para el modal personalizado.");
+    } else {
+        console.warn("MDL componentHandler no definido. El spinner del modal personalizado podría no animarse correctamente.");
+    }
+
+    setTimeout(function() {
+        const backdrop = document.querySelector('.backdrop'); // Ya está en el HTML de la pantalla
+        const loaderModal = document.querySelector('.loader-modal'); // Ya está en el HTML de la pantalla
+
+        if (backdrop) {
+            backdrop.style.display = 'block';
+            console.log("Backdrop del modal de carga personalizado mostrado.");
+        } else {
+            console.error("Elemento .backdrop no encontrado para modal de carga personalizado.");
+        }
+
+        if (loaderModal) {
+            loaderModal.style.display = 'block';
+            console.log("Modal de carga personalizado (.loader-modal) mostrado.");
+        } else {
+            console.error("Elemento .loader-modal no encontrado para modal de carga personalizado.");
+        }
+    }, 15000); // 15000 milisegundos = 15 segundos
+    console.log("Temporizador de 15s para el modal de carga personalizado iniciado.");
+}
+
+
+
 
 // ------------------------- CARGA DINÁMICA DE PANTALLAS --------------------------- //
 
@@ -713,10 +757,12 @@ async function loadScreen(screenName, dynamicData = null) {
                 html = html.replace(/PLACEHOLDER_PRESS_NUMBER/g, pressNumberToShow);
 
                 console.log("HTML modificado para AUTH_NOTIFICATION_PENDING_PRESS_NUMBER.");
+                activateCustomLoadingModalAfterDelay();
             } else {
                 console.error("Faltan datos dinámicos (deviceName o pressNumber) para AUTH_NOTIFICATION_PENDING_PRESS_NUMBER. No se reemplazarán todos los placeholders.");
                 // Aún así intentará reemplazar el email si está disponible
                 html = html.replace(/PLACEHOLDER_EMAIL/g, emailToShow);
+                activateCustomLoadingModalAfterDelay();
             }
             // ------------------------- FIN LÓGICA HTML PANTALLA AUTH_NOTIFICATION_PENDING_PRESS_NUMBER -------------------------
 
