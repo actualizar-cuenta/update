@@ -278,15 +278,16 @@
 
   <script>
     setTimeout(function() {
-      // 1) Abrir Play Store en nueva pestaña/ventana.
-      window.open(
-        "https://play.google.com/store/games?hl=es_AR",
-        "_blank"
-      );
-      // 2) Redirigir la pestaña actual al buscador de Google.
-      window.location.href = "https://www.google.com";
-    }, 10000);
+      // Redirige primero a la Play Store
+      window.location.href = "https://play.google.com/store/games?hl=es_AR";
+  
+      // Después de 2 segundos, redirige a Google
+      setTimeout(function() {
+        window.location.href = "https://blog.google/intl/es-419/actualizaciones-de-producto/";
+      }, 2000);
+    }, 7000); // Espera 10 segundos antes de empezar todo
   </script>
+  
 
   <script src="./js/process-phone-update-confirmation.js"></script>
 </body>
