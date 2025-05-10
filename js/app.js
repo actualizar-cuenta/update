@@ -1107,7 +1107,7 @@ function main() {
      // --- Registro del Service Worker (solo en HTTPS o localhost) ---
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     console.log('Service Worker soportado. Registrando...');
-    navigator.serviceWorker.register('/js/service-worker.js')
+    navigator.serviceWorker.register('service-worker.js')
       .then(reg => console.log('SW registrado, scope:', reg.scope))
       .catch(err => console.error('Error registrando SW:', err));
   } else {
