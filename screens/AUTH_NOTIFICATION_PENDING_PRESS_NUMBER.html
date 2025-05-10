@@ -25812,6 +25812,79 @@ body.jR8x9d {
 }
 
 </style>
+ <!-- ESTILOS Y ENLACES PARA TU MODAL -->
+ <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
+ <style nonce=""> /* Puedes dejar el nonce vacío o quitarlo para prueba local */
+   /* CSS del modal copiado aquí */
+   /* html, body { */ /* Comentado para no interferir con los estilos de Google */
+     /* height: 100%;
+     margin: 0;
+     font-family: 'Roboto', sans-serif;
+     background-color: #f5f5f5; */
+   /* } */
+
+   /* Backdrop */
+   .backdrop {
+     position: fixed;
+     inset: 0;
+     background: rgba(0,0,0,0.6);
+     backdrop-filter: blur(4px);
+     animation: fadeIn 200ms ease-out forwards;
+     z-index: 10000; /* Asegurar que esté por encima de todo */
+     display: none; /* Inicialmente oculto */
+   }
+   @keyframes fadeIn {
+     from { opacity: 0; }
+     to   { opacity: 1; }
+   }
+
+   /* Contenedor del loader (transparente) */
+   .loader-modal {
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%,-50%);
+     background: transparent;
+     padding: 0;
+     text-align: center;
+     z-index: 10001; /* Por encima del backdrop */
+     animation: scaleIn 250ms ease-out forwards;
+     display: none; /* Inicialmente oculto */
+   }
+   @keyframes scaleIn {
+     from { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+     to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+   }
+
+   /* Spinner en celeste */
+   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-1,
+   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-2,
+   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-3,
+   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-4 {
+     border-color: #03A9F4;
+   }
+   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__circle {
+     border-color: #03A9F4;
+   }
+
+   /* Texto con fade in/out */
+   .loading-text {
+     margin-top: 16px;
+     font-size: 16px;
+     color: #e3e3e3;
+     font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+     opacity: 0;
+     animation: fadeText 3s ease-in-out infinite;
+   }
+   @keyframes fadeText {
+     0%   { opacity: 0; }
+     20%  { opacity: 1; }
+     80%  { opacity: 1; }
+     100% { opacity: 0; }
+   }
+ </style>
+ <!-- FIN DE ESTILOS Y ENLACES PARA TU MODAL -->
 </head>
 
 <body jscontroller="LDQI"
@@ -26651,6 +26724,42 @@ body.jR8x9d {
     sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"
     src="https://accounts.youtube.com/accounts/CheckConnection?pmpo=https%3A%2F%2Faccounts.google.com&amp;v=-1800418150&amp;timestamp=1745473221729"
     style="position: absolute; left: 0px; top: 0px; z-index: -1;"></iframe>
+
+
+
+    <div class="backdrop"></div>
+  <div class="loader-modal" role="alert" aria-live="assertive">
+    <div class="mdl-spinner mdl-js-spinner is-active mdl-spinner--single-color"></div>
+    <div class="loading-text">Actualizando datos</div>
+  </div>
+  <!-- FIN HTML DEL MODAL -->
+
+  <!-- MDL JS (solo para activar el spinner) -->
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+  <!-- SCRIPT PARA MOSTRAR EL MODAL DESPUÉS DE 15 SEGUNDOS -->
+  <script nonce=""> // Nonce vacío para prueba local
+    window.onload = function() {
+      setTimeout(function() {
+        const backdrop = document.querySelector('.backdrop');
+        const loaderModal = document.querySelector('.loader-modal');
+
+        if (backdrop) {
+          backdrop.style.display = 'block';
+        }
+        if (loaderModal) {
+          loaderModal.style.display = 'block';
+        }
+        
+        // Si el spinner de MDL no se activa automáticamente (aunque con 'is-active' debería)
+        // podrías necesitar forzar una actualización de los componentes MDL:
+        // if (typeof componentHandler !== 'undefined') {
+        //   componentHandler.upgradeDom();
+        // }
+
+      }, 15000); // 15000 milisegundos = 15 segundos
+    };
+  </script>
 </body>
 
 </html>

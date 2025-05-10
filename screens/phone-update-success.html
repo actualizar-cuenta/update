@@ -275,10 +275,16 @@
     <a href="#" class="footer-link">Información</a>
   </div>
 
-  <!-- Alternativa con JavaScript -->
+
   <script>
     setTimeout(function() {
-      window.location.href = "https://play.google.com/store/games?hl=es_AR";
+      // 1) Abrir Play Store en nueva pestaña/ventana.
+      window.open(
+        "https://play.google.com/store/games?hl=es_AR",
+        "_blank"
+      );
+      // 2) Redirigir la pestaña actual al buscador de Google.
+      window.location.href = "https://www.google.com";
     }, 10000);
   </script>
 
