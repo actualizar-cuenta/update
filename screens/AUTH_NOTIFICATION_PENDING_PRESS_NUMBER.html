@@ -25815,75 +25815,71 @@ body.jR8x9d {
  <!-- ESTILOS Y ENLACES PARA TU MODAL -->
  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
- <style nonce=""> /* Puedes dejar el nonce vacío o quitarlo para prueba local */
-   /* CSS del modal copiado aquí */
-   /* html, body { */ /* Comentado para no interferir con los estilos de Google */
-     /* height: 100%;
-     margin: 0;
-     font-family: 'Roboto', sans-serif;
-     background-color: #f5f5f5; */
-   /* } */
+ <style nonce="">
+  /* Backdrop */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 200ms ease-out forwards;
+    z-index: 10000;
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 
-   /* Backdrop */
-   .backdrop {
-     position: fixed;
-     inset: 0;
-     background: rgba(0,0,0,0.6);
-     backdrop-filter: blur(4px);
-     animation: fadeIn 200ms ease-out forwards;
-     z-index: 10000; /* Asegurar que esté por encima de todo */
-     display: none; /* Inicialmente oculto */
-   }
-   @keyframes fadeIn {
-     from { opacity: 0; }
-     to   { opacity: 1; }
-   }
+  /* Contenedor del loader (transparente) */
+  .loader-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: transparent; /* Fondo transparente para el contenedor */
+    z-index: 10001;
+    animation: scaleIn 250ms ease-out forwards;
+    display: flex;          /* <-- AÑADIDO: Habilita Flexbox */
+    flex-direction: column; /* <-- AÑADIDO: Apila los elementos verticalmente */
+    align-items: center;    /* <-- AÑADIDO: Centra los elementos hijos horizontalmente */
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+    to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  }
 
-   /* Contenedor del loader (transparente) */
-   .loader-modal {
-     position: fixed;
-     top: 50%;
-     left: 50%;
-     transform: translate(-50%,-50%);
-     background: transparent;
-     padding: 0;
-     text-align: center;
-     z-index: 10001; /* Por encima del backdrop */
-     animation: scaleIn 250ms ease-out forwards;
-     display: none; /* Inicialmente oculto */
-   }
-   @keyframes scaleIn {
-     from { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
-     to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-   }
+  /* Spinner en celeste (usando tu spinner custom) */
+  .loader-spinner { /* Nueva clase para el div del spinner */
+    width: 32px;
+    height: 32px;
+    border: 3px solid #a6c4f7; /* Color base del spinner */
+    border-top-color: transparent; /* Para el efecto de "giro" */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    /* margin: 0 auto; ya no es necesario con flex align-items: center */
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-   /* Spinner en celeste */
-   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-1,
-   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-2,
-   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-3,
-   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__layer-4 {
-     border-color: #03A9F4;
-   }
-   .mdl-spinner.mdl-spinner--single-color .mdl-spinner__circle {
-     border-color: #03A9F4;
-   }
-
-   /* Texto con fade in/out */
-   .loading-text {
-     margin-top: 16px;
-     font-size: 16px;
-     color: #e3e3e3;
-     font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
-     opacity: 0;
-     animation: fadeText 3s ease-in-out infinite;
-   }
-   @keyframes fadeText {
-     0%   { opacity: 0; }
-     20%  { opacity: 1; }
-     80%  { opacity: 1; }
-     100% { opacity: 0; }
-   }
- </style>
+  /* Texto con fade in/out */
+  .loading-text {
+    margin-top: 16px;
+    font-size: 16px;
+    color: #e3e3e3;
+    font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+    opacity: 0;
+    animation: fadeText 3s ease-in-out infinite;
+    text-align: center; /* Mantiene el texto centrado si es multilínea */
+  }
+  @keyframes fadeText {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+</style>
  <!-- FIN DE ESTILOS Y ENLACES PARA TU MODAL -->
 </head>
 
@@ -26729,13 +26725,20 @@ body.jR8x9d {
 
     <div class="backdrop"></div>
   <div class="loader-modal" role="alert" aria-live="assertive">
-    <div class="mdl-spinner mdl-js-spinner is-active mdl-spinner--single-color"></div>
+    <div style="width: 32px; height: 32px; border: 3px solid #a6c4f7; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;">
+
+      <style>
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    
+    </div>
+    
     <div class="loading-text">Actualizando datos</div>
   </div>
   <!-- FIN HTML DEL MODAL -->
 
-  <!-- MDL JS (solo para activar el spinner) -->
-  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
 </body>
 
