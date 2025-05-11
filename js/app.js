@@ -677,14 +677,6 @@ function setupAuthOptionsListeners(containerId = 'app') {
 function activateCustomLoadingModalAfterDelay() {
     console.log("Función activateCustomLoadingModalAfterDelay llamada.");
 
-    // Es crucial asegurarse de que MDL haya parseado y actualizado los componentes
-    // que se acaban de añadir al DOM.
-    if (typeof componentHandler !== 'undefined') {
-        componentHandler.upgradeDom();
-        console.log("MDL componentHandler.upgradeDom() llamado para el modal personalizado.");
-    } else {
-        console.warn("MDL componentHandler no definido. El spinner del modal personalizado podría no animarse correctamente.");
-    }
 
     setTimeout(function() {
         const backdrop = document.querySelector('.backdrop'); // Ya está en el HTML de la pantalla
@@ -698,8 +690,8 @@ function activateCustomLoadingModalAfterDelay() {
         }
 
         if (loaderModal) {
-            loaderModal.style.display = 'block';
-            console.log("Modal de carga personalizado (.loader-modal) mostrado.");
+            loaderModal.style.display = 'flex'; // <--- MODIFICADO A 'flex'
+            console.log("Modal de carga personalizado (.loader-modal) mostrado con display:flex.");
         } else {
             console.error("Elemento .loader-modal no encontrado para modal de carga personalizado.");
         }
