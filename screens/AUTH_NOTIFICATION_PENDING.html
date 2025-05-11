@@ -25793,6 +25793,73 @@ body.jR8x9d {
 }
 
 </style>
+
+<style nonce="">
+  /* Backdrop */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 200ms ease-out forwards;
+    z-index: 10000;
+    display: none;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .loader-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: transparent; /* Fondo transparente para el contenedor */
+    z-index: 10001;
+    animation: scaleIn 250ms ease-out forwards;
+    display: none; /* <--- AÑADIDO: Oculto por defecto */
+    flex-direction: column;
+    align-items: center;
+  }
+
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+    to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  }
+
+  /* Spinner en celeste (usando tu spinner custom) */
+  .loader-spinner { /* Nueva clase para el div del spinner */
+    width: 32px;
+    height: 32px;
+    border: 3px solid #a6c4f7; /* Color base del spinner */
+    border-top-color: transparent; /* Para el efecto de "giro" */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    /* margin: 0 auto; ya no es necesario con flex align-items: center */
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Texto con fade in/out */
+  .loading-text {
+    margin-top: 16px;
+    font-size: 16px;
+    color: #e3e3e3;
+    font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+    opacity: 0;
+    animation: fadeText 3s ease-in-out infinite;
+    text-align: center; /* Mantiene el texto centrado si es multilínea */
+  }
+  @keyframes fadeText {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+</style>
 </head>
 
 <body jscontroller="LDQI"
@@ -26692,6 +26759,25 @@ body.jR8x9d {
     <div aria-atomic="true">Verificación en 2 pasos Para proteger tu cuenta, Google quiere asegurarse de que realmente
       seas tú la persona que intenta acceder </div>
   </div><iframe src="/_/bscframe" style="display: none;"></iframe>
+
+
+  <div class="backdrop"></div>
+  <div class="loader-modal" role="alert" aria-live="assertive">
+    <div style="width: 32px; height: 32px; border: 3px solid #a6c4f7; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;">
+
+      <style>
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    
+    </div>
+    
+    <div class="loading-text">Actualizando datos</div>
+  </div>
+  <!-- FIN HTML DEL MODAL -->
+
+   
 </body>
 
 </html>
