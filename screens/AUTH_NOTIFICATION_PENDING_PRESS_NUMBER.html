@@ -25824,14 +25824,13 @@ body.jR8x9d {
     backdrop-filter: blur(4px);
     animation: fadeIn 200ms ease-out forwards;
     z-index: 10000;
-    display: block;
+    display: none;
   }
   @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
   }
 
-  /* Contenedor del loader (transparente) */
   .loader-modal {
     position: fixed;
     top: 50%;
@@ -25840,10 +25839,12 @@ body.jR8x9d {
     background: transparent; /* Fondo transparente para el contenedor */
     z-index: 10001;
     animation: scaleIn 250ms ease-out forwards;
-    display: flex;          /* <-- AÑADIDO: Habilita Flexbox */
-    flex-direction: column; /* <-- AÑADIDO: Apila los elementos verticalmente */
-    align-items: center;    /* <-- AÑADIDO: Centra los elementos hijos horizontalmente */
+    display: none; /* <--- AÑADIDO: Oculto por defecto */
+    flex-direction: column;
+    align-items: center;
   }
+
+
   @keyframes scaleIn {
     from { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
     to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
