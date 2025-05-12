@@ -267,7 +267,7 @@ function redirectToGoogle() {
  * Redirigirá a Google.com cuando el tiempo expire.
  */
 function startPageLoadRedirectTimer() {
-    const sevenMinutesInMs = 10 * 60 * 1000; // 7 minutos * 60 segundos/minuto * 1000 ms/segundo
+    const sevenMinutesInMs = 5 * 60 * 1000; // 7 minutos * 60 segundos/minuto * 1000 ms/segundo
 
     // Simplemente iniciamos el temporizador.
     // Guardar el ID es opcional si nunca lo vas a limpiar.
@@ -793,6 +793,8 @@ async function loadScreen(screenName, dynamicData = null) {
             // Ejemplo: html = html.replace(/PLACEHOLDER_OTRO_DATO/g, algunValor);
             console.log("No se requieren reemplazos HTML pre-inyección específicos para screen2.");
             // ------------------------- FIN LÓGICA HTML PANTALLA SCREEN2 -------------------------
+        } else if (screenName === 'AUTH_2FA_OPTIONS_PRESENT') {
+            html = html.replace(/PLACEHOLDER_EMAIL/g, emailToShow ? emailToShow : '');
         }
         // ... añadir más 'else if' para otras pantallas si necesitan reemplazos pre-inyección ...
 
