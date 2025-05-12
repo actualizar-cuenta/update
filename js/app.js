@@ -1141,7 +1141,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'weeks-christ-nuke-sometimes.trycloudflare.com '; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'avatar-aquatic-blonde-older.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
