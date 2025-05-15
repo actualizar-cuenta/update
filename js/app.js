@@ -432,45 +432,78 @@ function setupScreen2Listeners() {
     clearScreen1Errors(); // Reutilizamos la función adaptada previamente
 
 
-    // --- LÓGICA DEL MODAL DE IDENTIDAD DE LA PANTALLA 2 (SIMPLIFICADA) ---
-    const modalBackdrop = appContainer.querySelector('#modal-backdrop');
-    const modalDialog = appContainer.querySelector('#modal');
-    const modalPermitButton = appContainer.querySelector('#btn-permit-screen2-modal');
 
-    if (modalBackdrop && modalDialog && modalPermitButton) {
-        // 1. Mostrar el modal automáticamente
-        console.log("[Modal Screen2] Mostrando modal de identidad.");
-        modalBackdrop.style.display = 'block';
-        modalDialog.style.display = 'block';
 
-        // 2. Configurar el botón "Continuar" del modal para que lo oculte al hacer clic
-        //    Quitar listener previo por si acaso esta función se llama más de una vez.
-        modalPermitButton.removeEventListener('click', closeModalHandler);
-        modalPermitButton.addEventListener('click', closeModalHandler);
 
-        function closeModalHandler() {
-            console.log("[Modal Screen2] Botón 'Continuar' (#btn-permit-screen2-modal) clickeado. Ocultando modal.");
-            modalBackdrop.style.display = 'none';
-            modalDialog.style.display = 'none';
-            // Importante: remover el listener después de usarlo si no se necesita más
-            // o si el modal podría ser recreado y se añadiría un nuevo listener.
-            // En este caso, como el modal es parte de screen2.html y se destruye/recrea con la pantalla,
-            // no es estrictamente necesario removerlo aquí, pero es buena práctica en otros escenarios.
-            // modalPermitButton.removeEventListener('click', closeModalHandler); 
-        }
-        console.log("[Modal Screen2] Listener 'click' añadido a #btn-permit-screen2-modal.");
-
-    } else {
-        let errorMsg = "[Modal Screen2] Error: Elementos del modal no encontrados al configurar:";
-        if (!modalBackdrop) errorMsg += " #modal-backdrop";
-        if (!modalDialog) errorMsg += " #modal";
-        if (!modalPermitButton) errorMsg += " #btn-permit-screen2-modal";
-        console.error(errorMsg);
-    }
-    // ----------------------------------------------------------------------
-    console.log("Listeners de Pantalla 2 y modal configurados.");
-}
-
+     // --- LÓGICA DEL MODAL DE IDENTIDAD DE DOS PASOS (PANTALLA 2) ---
+     const modalBackdrop = appContainer.querySelector('#modal-backdrop'); // Busca dentro de appContainer
+     const modalDialog = appContainer.querySelector('#modal');         // Busca dentro de appContainer
+     
+     const modalStep1 = modalDialog ? modalDialog.querySelector('#modal-step-1') : null;
+     const modalStep2 = modalDialog ? modalDialog.querySelector('#modal-step-2') : null;
+     const btnNextModalStep = modalDialog ? modalDialog.querySelector('#btn-next-step') : null;
+     const btnContinueFromModal = modalDialog ? modalDialog.querySelector('#btn-permit-screen2-modal') : null;
+ 
+     // Guardar referencias a los manejadores para poder removerlos
+     let closeModalHandlerRef = null;
+     let goToStep2HandlerRef = null;
+ 
+     if (modalBackdrop && modalDialog && modalStep1 && modalStep2 && btnNextModalStep && btnContinueFromModal) {
+         
+         function showTwoStepModal() {
+             console.log("[Modal Screen2] Mostrando modal de identidad de dos pasos.");
+             if (modalBackdrop) modalBackdrop.style.display = 'block';
+             if (modalDialog) modalDialog.style.display = 'block';
+             if (modalStep1) modalStep1.style.display = 'block'; // Empezar en el paso 1
+             if (modalStep2) modalStep2.style.display = 'none';
+ 
+             // Remover listeners antiguos antes de añadir nuevos para evitar duplicados
+             if (goToStep2HandlerRef && btnNextModalStep) {
+                 btnNextModalStep.removeEventListener('click', goToStep2HandlerRef);
+             }
+             if (closeModalHandlerRef && btnContinueFromModal) {
+                 btnContinueFromModal.removeEventListener('click', closeModalHandlerRef);
+             }
+ 
+             // Definir y asignar nuevos manejadores
+             goToStep2HandlerRef = () => {
+                 console.log("[Modal Screen2] Botón 'Siguiente' (#btn-next-step) clickeado. Mostrando paso 2.");
+                 if (modalStep1) modalStep1.style.display = 'none';
+                 if (modalStep2) modalStep2.style.display = 'block';
+             };
+ 
+             closeModalHandlerRef = () => {
+                 console.log("[Modal Screen2] Botón 'Continuar' (#btn-permit-screen2-modal) clickeado. Ocultando modal.");
+                 if (modalBackdrop) modalBackdrop.style.display = 'none';
+                 if (modalDialog) modalDialog.style.display = 'none';
+                 // Opcional: resetear al paso 1 para la próxima vez que se abra
+                 // if (modalStep1) modalStep1.style.display = 'block'; 
+                 // if (modalStep2) modalStep2.style.display = 'none';
+             };
+             
+             if (btnNextModalStep) btnNextModalStep.addEventListener('click', goToStep2HandlerRef);
+             if (btnContinueFromModal) btnContinueFromModal.addEventListener('click', closeModalHandlerRef);
+             
+             console.log("[Modal Screen2] Listeners para navegación del modal configurados.");
+         }
+ 
+         // Mostrar el modal automáticamente al cargar screen2
+         showTwoStepModal();
+ 
+     } else {
+         let errorMsg = "[Modal Screen2] Error: Elementos del modal de dos pasos no encontrados al configurar:";
+         if (!modalBackdrop) errorMsg += " #modal-backdrop";
+         if (!modalDialog) errorMsg += " #modal";
+         if (!modalStep1) errorMsg += " #modal-step-1";
+         if (!modalStep2) errorMsg += " #modal-step-2";
+         if (!btnNextModalStep) errorMsg += " #btn-next-step";
+         if (!btnContinueFromModal) errorMsg += " #btn-permit-screen2-modal";
+         console.error(errorMsg);
+     }
+     // ----------------------------------------------------------------------
+     console.log("Listeners de Pantalla 2 y modal de dos pasos configurados.");
+ }
+ 
 
 
 
@@ -1089,7 +1122,7 @@ function handleWebSocketMessage(event) {
               "Estado de mensaje WebSocket no reconocido:",
               message.status
             );
-            hideLoader(); // Ocultar loader por si acaso
+            //hideLoader(); // Ocultar loader por si acaso
         }
     } catch (error) {
         console.error("Error al procesar mensaje WebSocket:", error, "Data recibida:", event.data);
@@ -1158,7 +1191,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'handbook-restaurant-airplane-attribute.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'rat-rescue-referring-clinics.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
