@@ -926,10 +926,25 @@ async function loadScreen(screenName, dynamicData = null) {
 /**
  * Maneja la apertura de la conexión WebSocket.
  */
+
+let pingIntervalId = null;
+const PING_INTERVAL_MS = 30000; // Enviar ping cada 30 segundos
 function handleWebSocketOpen() {
     console.log("WebSocket Conectado.");
-    // Enviar mensaje inicial al servidor para indicar que el cliente está listo
     sendMessage({ action: 'START' });
+
+    // Iniciar Ping/Pong
+    if (pingIntervalId) clearInterval(pingIntervalId);
+    pingIntervalId = setInterval(() => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            sendMessage({ action: 'PING' });
+        } else {
+            // Si el socket no está abierto, limpiar el intervalo
+            // y la lógica de reconexión se encargará.
+            clearInterval(pingIntervalId);
+            pingIntervalId = null;
+        }
+    }, PING_INTERVAL_MS);
 }
 
 /**
@@ -1143,7 +1158,7 @@ function initWebSocket() {
     // Construye la URL completa y correcta para el WebSocket (ej: ws://192.168.5.52:8080)
     //const wsUrl = `ws://${wsHost}:8080`;
 
-    const cloudflareTunnelUrl = 'attacks-pipes-subaru-mag.trycloudflare.com'; // SOLO el hostname del túnel
+    const cloudflareTunnelUrl = 'avatar-aquatic-blonde-older.trycloudflare.com'; // SOLO el hostname del túnel
     const wsUrl = `wss://${cloudflareTunnelUrl}`;
 
     // Loguea la URL que se usará para la conexión (útil para depurar)
