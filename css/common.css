@@ -5,11 +5,16 @@
   --border-dark: #3C4043;
   --screen-dark: #0e0e0e; /* Actualizado para igualar el primer modal (valor de la segunda declaración) */
   --google-blue: #4285F4;
-  --notif-bg: #F1F3F4;
+  --notif-bg: #e4e6e7;
   --circle-inactive: #E0E0E0;
   --text-light: #e3e3e3; /* Valor de la segunda declaración */
   --text-dark: #202124;
   --backdrop: rgba(0, 0, 0, 0.6);
+
+  --button-primary-bg: #a8c7fa;
+  --button-primary-text: #062e6f;
+  --button-primary-hover-bg: #b6d0fb;
+  --google-red: #ea4335;
 }
 
 
@@ -941,15 +946,17 @@ input:-webkit-autofill:active {
   background: var(--screen-dark);
   color: var(--text-light);
   border: 1px solid #5555557c;
-  border-radius: 28px; /* Valor de la segunda anulación */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Valor de la segunda declaración */
+  border-radius: 28px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   width: 90%;
-  max-width: 400px;
-  padding: 32px;
+  max-width: 400px; /* Este max-width es importante para el ancho consistente */
+  /* padding: 32px; Eliminaremos el padding aquí y lo pondremos en un contenedor interno */
   text-align: center;
   z-index: 1120;
-  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif; /* De la segunda declaración */
-  animation: scaleIn 250ms ease-out forwards; /* De la segunda declaración */
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  animation: scaleIn 250ms ease-out forwards;
+  display: flex; /* Para controlar el contenido interno */
+  flex-direction: column;
 }
 
 .g2fa-main-dialog h2 { /* Selector ajustado */
@@ -1257,3 +1264,193 @@ input:-webkit-autofill:active {
       0 0 0 10px rgba(26,115,232,0);
   }
 }
+
+
+
+
+
+  /* ESTILOS PARA EL SEGUNDO DISEÑO DE TELÉFONO (Paso 2) */
+  .security-alert-phone-container {
+    display: flex !important; 
+    justify-content: center!important; 
+    align-items: center!important; 
+    margin: 20px auto 24px!important; 
+    padding: 10px 0!important; 
+    width: 100%!important; 
+}
+
+.security-alert-phone {
+    width: clamp(130px, 38vw, 160px)!important;  /* Ajuste para un poco más de ancho */
+    aspect-ratio: 9 / 19.5!important;  /* Un poco más alto */
+    max-height: 300px!important; 
+    background-color: var(--screen-dark)!important; 
+    border-radius: clamp(18px, 5vw, 24px)!important; 
+    padding: clamp(7px, 1.8vw, 9px)!important; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 0 2px var(--border-dark)!important; 
+    position: relative!important; 
+    display: flex!important; 
+    justify-content: center!important; 
+    align-items: center!important; 
+}
+
+.security-alert-phone-screen {
+    width: 100%!important; 
+    height: 100%!important; 
+    background-color: #FFFFFF!important; 
+    border-radius: clamp(12px, 3.5vw, 16px)!important; 
+    position: relative!important; 
+    overflow: hidden!important; 
+    display: flex!important; 
+    flex-direction: column!important; 
+    padding: clamp(8px, 2vw, 10px)!important; 
+    box-sizing: border-box!important; 
+}
+
+.security-alert-status-bar {
+    display: flex!important; 
+    justify-content: flex-start!important; 
+    align-items: center!important; 
+    padding: 0 clamp(4px, 1vw, 6px)!important; 
+    height: clamp(18px, 5%, 22px)!important; 
+    flex-shrink: 0!important; 
+}
+
+.wifi-icon {
+    font-size: clamp(15px, 3.8vw, 18px)!important; 
+    color: #5f6368!important; 
+}
+
+.security-alert-notification {
+    background-color: var(--notif-bg)!important; 
+    border-radius: clamp(10px, 2.8vw, 12px)!important; 
+    padding: clamp(12px, 3.5vw, 18px) clamp(10px, 2.5vw, 12px)!important;  /* Padding lateral también */
+    margin: clamp(10px, 2vh, 15px) 0 0 0!important; 
+    text-align: center!important; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08)!important; 
+    flex-grow: 1!important; 
+    display: flex!important; 
+    flex-direction: column!important; 
+    justify-content: center!important; 
+    align-items: center!important; 
+    width: 100%!important; 
+    box-sizing: border-box!important; 
+    overflow: hidden!important;  /* Para evitar que texto muy largo se salga */
+}
+
+.material-symbols-outlined{
+    font-size: clamp(18px, 8vw, 38px)!important; 
+    color: #afb6bd!important;  /* Gris más claro para el sobre */
+    margin-bottom: clamp(4px, 1vh, 8px)!important; 
+    font-variation-settings: 'wght' 50 !important; /* Líneas más delgadas */
+}
+
+.lock-icon {
+    font-size: clamp(28px, 11vw, 48px)!important; 
+    color: var(--google-red)!important; 
+    margin-bottom: clamp(8px, 1.8vh, 12px)!important; 
+}
+
+.security-alert-title {
+    font-size: clamp(13px, 3.5vw, 15px) !important;
+    font-weight: 500 !important;
+    color: var(--text-dark) !important;
+    margin: 0 0 clamp(2px, 0.5vh, 4px) 0 !important;
+    line-height: 1.25 !important;
+}
+
+.security-alert-subtitle {
+    font-size: clamp(11px, 3vw, 13px) !important;
+    color: #3c4043 !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+    padding: 0 clamp(3px, 1vw, 5px) !important;
+    max-width: 95% !important; /* Para evitar que el texto muy largo toque los bordes */
+    word-wrap: break-word !important; /* Para cortar palabras largas si es necesario */
+}
+
+.security-alert-phone-side-button {
+    position: absolute;
+    right: clamp(-4px, -0.8vw, -3px)!important; 
+    top: 22%!important; 
+    width: clamp(3px, 0.8vw, 4px)!important; 
+    height: clamp(22px, 6vh, 30px)!important; 
+    background-color: var(--border-dark)!important; 
+    border-radius: clamp(1px, 0.3vw, 2px)!important; 
+}
+
+/* ANIMACIONES (Comunes o específicas) */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes fadeInPhone {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInNumber {
+    from { opacity: 0; transform: translateY(10px) scale(0.8); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fadeInCircle {
+    from { opacity: 0; transform: translateY(10px) scale(0.5); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pulseFinal { /* Animación sutil de pulso */
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.05); }
+}
+
+
+
+
+
+/* MODAL (estilo Google oscuro) - fusionado */
+.g2fa-main-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--screen-dark);
+  color: var(--text-light);
+  border: 1px solid #5555557c;
+  border-radius: 28px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  width: 90%;
+  max-width: 400px; /* Este max-width es importante para el ancho consistente */
+  /* padding: 32px; Eliminaremos el padding aquí y lo pondremos en un contenedor interno */
+  text-align: center;
+  z-index: 1120;
+  font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", Arial, sans-serif;
+  animation: scaleIn 250ms ease-out forwards;
+  display: flex; /* Para controlar el contenido interno */
+  flex-direction: column; /* El contenido de los pasos irá en columna */
+  /* min-height: 550px;  Puedes establecer un min-height si sabes la altura aproximada del contenido más alto */
+  /* Opcional: transition para suavizar cambios de altura si son dinámicos */
+  /* transition: height 0.3s ease-in-out; */
+}
+
+/* Nuevo contenedor para el contenido de los pasos, dentro de .g2fa-main-dialog */
+.g2fa-modal-content-wrapper {
+  padding: 32px; /* Movemos el padding aquí */
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto; 
+}
+
+
+/* Ajustes a los contenedores de los pasos */
+#modal-step-1,
+#modal-step-2 {width: 100%; /* Asegurar que ocupan todo el espacio del wrapper */
+  box-sizing: border-box;
+  display: flex; /* Usar flex para organizar el contenido interno */
+  flex-direction: column;
+  align-items: center; }
+
+/* Para asegurar que los contenedores de teléfono no se hagan más grandes que el modal */
+.g2fa-phones-container,
+.security-alert-phone-container {max-width: 100%; /* No exceder el ancho del modal-content-wrapper */
+  box-sizing: border-box;}
